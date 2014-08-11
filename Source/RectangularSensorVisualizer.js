@@ -3,7 +3,6 @@ define([
         'Cesium/Core/AssociativeArray',
         'Cesium/Core/Cartesian3',
         'Cesium/Core/Color',
-        'Cesium/Core/defaultValue',
         'Cesium/Core/defined',
         'Cesium/Core/destroyObject',
         'Cesium/Core/DeveloperError',
@@ -12,15 +11,13 @@ define([
         'Cesium/Core/Matrix4',
         'Cesium/Core/Quaternion',
         'Cesium/Core/Spherical',
-        './CustomSensorVolume',
-        'Cesium/Scene/Material',
+        './RectangularPyramidSensorVolume',
         'Cesium/DataSources/MaterialProperty',
         'Cesium/DataSources/Property'
     ], function(
         AssociativeArray,
         Cartesian3,
         Color,
-        defaultValue,
         defined,
         destroyObject,
         DeveloperError,
@@ -29,8 +26,7 @@ define([
         Matrix4,
         Quaternion,
         Spherical,
-        CustomSensorVolume,
-        Material,
+        RectangularPyramidSensorVolume,
         MaterialProperty,
         Property) {
     "use strict";
@@ -42,34 +38,6 @@ define([
     var matrix3Scratch = new Matrix3();
     var cachedPosition = new Cartesian3();
     var cachedOrientation = new Quaternion();
-
-    function assignSpherical(index, array, clock, cone) {
-        var spherical = array[index];
-        if (!defined(spherical)) {
-            array[index] = spherical = new Spherical();
-        }
-        spherical.clock = clock;
-        spherical.cone = cone;
-        spherical.magnitude = 1.0;
-    }
-
-    function computeDirections(primitive, xHalfAngle, yHalfAngle) {
-        var directions = primitive.directions;
-
-        // At 90 degrees the sensor is completely open, and tan() goes to infinity.
-        var tanX = Math.tan(Math.min(xHalfAngle, CesiumMath.toRadians(89.0)));
-        var tanY = Math.tan(Math.min(yHalfAngle, CesiumMath.toRadians(89.0)));
-        var theta = Math.atan(tanX / tanY);
-        var cone = Math.atan(Math.sqrt(tanX * tanX + tanY * tanY));
-
-        assignSpherical(0, directions, theta, cone);
-        assignSpherical(1, directions, CesiumMath.toRadians(180.0) - theta, cone);
-        assignSpherical(2, directions, CesiumMath.toRadians(180.0) + theta, cone);
-        assignSpherical(3, directions, -theta, cone);
-
-        directions.length = 4;
-        primitive.directions = directions;
-    }
 
     /**
      * A {@link Visualizer} which maps {@link Entity#rectangularSensor} to a {@link RectangularSensor}.
@@ -143,16 +111,14 @@ define([
 
             var primitive = defined(data) ? data.primitive : undefined;
             if (!defined(primitive)) {
-                primitive = new CustomSensorVolume();
+                primitive = new RectangularPyramidSensorVolume();
                 primitive.id = entity;
                 primitives.add(primitive);
 
                 data = {
                     primitive : primitive,
                     position : undefined,
-                    orientation : undefined,
-                    xHalfAngle : undefined,
-                    yHalfAngle : undefined
+                    orientation : undefined
                 };
                 hash[entity.id] = data;
             }
@@ -164,18 +130,8 @@ define([
             }
 
             primitive.show = true;
-
-            var xHalfAngle = Property.getValueOrDefault(rectangularSensorGraphics._xHalfAngle, time, CesiumMath.PI_OVER_TWO);
-            var yHalfAngle = Property.getValueOrDefault(rectangularSensorGraphics._yHalfAngle, time, CesiumMath.PI_OVER_TWO);
-
-            if (xHalfAngle !== data.xHalfAngle ||
-                yHalfAngle !== data.yHalfAngle) {
-
-                computeDirections(primitive, xHalfAngle, yHalfAngle);
-                data.xHalfAngle = xHalfAngle;
-                data.yHalfAngle = yHalfAngle;
-            }
-
+            primitive.xHalfAngle = Property.getValueOrDefault(rectangularSensorGraphics._xHalfAngle, time, CesiumMath.PI_OVER_TWO);
+            primitive.yHalfAngle = Property.getValueOrDefault(rectangularSensorGraphics._yHalfAngle, time, CesiumMath.PI_OVER_TWO);
             primitive.radius = Property.getValueOrDefault(rectangularSensorGraphics._radius, time, defaultRadius);
             primitive.lateralSurfaceMaterial = MaterialProperty.getValue(time, rectangularSensorGraphics._lateralSurfaceMaterial, primitive.lateralSurfaceMaterial);
             primitive.intersectionColor = Property.getValueOrClonedDefault(rectangularSensorGraphics._intersectionColor, time, defaultIntersectionColor, primitive.intersectionColor);

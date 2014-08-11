@@ -8,11 +8,11 @@
   <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
   <title>Cesium Sensors Example</title>
-  
+
   <link rel="stylesheet" href="//cesiumjs.org/releases/1.0/Build/Cesium/Widgets/widgets.css" />
   <script src="//cesiumjs.org/releases/1.0/Build/Cesium/Cesium.js"></script>
   <script src="../Build/CesiumSensors.js"></script>
-  
+
   <style>
       #cesiumContainer {
           position: absolute;
@@ -43,11 +43,11 @@
   <script>
     var viewer = new Cesium.Viewer('cesiumContainer');
     viewer.extend(Cesium.viewerDragDropMixin);
-    
+
     var czmlFile = 'LotsOfSensors.czml';
     var dataSource = new Cesium.CzmlDataSource(czmlFile);
     dataSource.loadUrl(czmlFile);
-    
+
     viewer.dataSources.add(dataSource);
   </script>
 </body>

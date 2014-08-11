@@ -1193,7 +1193,6 @@ define('ConicSensorVisualizer',[
         'Cesium/Core/Quaternion',
         'Cesium/Core/Spherical',
         './CustomSensorVolume',
-        'Cesium/Scene/Material',
         'Cesium/DataSources/MaterialProperty',
         'Cesium/DataSources/Property'
     ], function(
@@ -1209,7 +1208,6 @@ define('ConicSensorVisualizer',[
         Quaternion,
         Spherical,
         CustomSensorVolume,
-        Material,
         MaterialProperty,
         Property) {
     "use strict";
@@ -1591,34 +1589,26 @@ define('CustomPatternSensorVisualizer',[
         'Cesium/Core/AssociativeArray',
         'Cesium/Core/Cartesian3',
         'Cesium/Core/Color',
-        'Cesium/Core/defaultValue',
         'Cesium/Core/defined',
         'Cesium/Core/destroyObject',
         'Cesium/Core/DeveloperError',
-        'Cesium/Core/Math',
         'Cesium/Core/Matrix3',
         'Cesium/Core/Matrix4',
         'Cesium/Core/Quaternion',
-        'Cesium/Core/Spherical',
         './CustomSensorVolume',
-        'Cesium/Scene/Material',
         'Cesium/DataSources/MaterialProperty',
         'Cesium/DataSources/Property'
     ], function(
         AssociativeArray,
         Cartesian3,
         Color,
-        defaultValue,
         defined,
         destroyObject,
         DeveloperError,
-        CesiumMath,
         Matrix3,
         Matrix4,
         Quaternion,
-        Spherical,
         CustomSensorVolume,
-        Material,
         MaterialProperty,
         Property) {
     "use strict";
@@ -1949,49 +1939,27 @@ define('RectangularSensorGraphics',[
 });
 
 /*global define*/
-define('RectangularSensorVisualizer',[
-        'Cesium/Core/AssociativeArray',
-        'Cesium/Core/Cartesian3',
-        'Cesium/Core/Color',
+define('RectangularPyramidSensorVolume',[
+        'Cesium/Core/clone',
         'Cesium/Core/defaultValue',
         'Cesium/Core/defined',
+        'Cesium/Core/defineProperties',
         'Cesium/Core/destroyObject',
         'Cesium/Core/DeveloperError',
         'Cesium/Core/Math',
-        'Cesium/Core/Matrix3',
-        'Cesium/Core/Matrix4',
-        'Cesium/Core/Quaternion',
         'Cesium/Core/Spherical',
-        './CustomSensorVolume',
-        'Cesium/Scene/Material',
-        'Cesium/DataSources/MaterialProperty',
-        'Cesium/DataSources/Property'
+        './CustomSensorVolume'
     ], function(
-        AssociativeArray,
-        Cartesian3,
-        Color,
+        clone,
         defaultValue,
         defined,
+        defineProperties,
         destroyObject,
         DeveloperError,
         CesiumMath,
-        Matrix3,
-        Matrix4,
-        Quaternion,
         Spherical,
-        CustomSensorVolume,
-        Material,
-        MaterialProperty,
-        Property) {
+        CustomSensorVolume) {
     "use strict";
-
-    var defaultIntersectionColor = Color.WHITE;
-    var defaultIntersectionWidth = 1.0;
-    var defaultRadius = Number.POSITIVE_INFINITY;
-
-    var matrix3Scratch = new Matrix3();
-    var cachedPosition = new Cartesian3();
-    var cachedOrientation = new Quaternion();
 
     function assignSpherical(index, array, clock, cone) {
         var spherical = array[index];
@@ -2003,12 +1971,12 @@ define('RectangularSensorVisualizer',[
         spherical.magnitude = 1.0;
     }
 
-    function computeDirections(primitive, xHalfAngle, yHalfAngle) {
-        var directions = primitive.directions;
+    function updateDirections(rectangularSensor) {
+        var directions = rectangularSensor._customSensor.directions;
 
         // At 90 degrees the sensor is completely open, and tan() goes to infinity.
-        var tanX = Math.tan(Math.min(xHalfAngle, CesiumMath.toRadians(89.0)));
-        var tanY = Math.tan(Math.min(yHalfAngle, CesiumMath.toRadians(89.0)));
+        var tanX = Math.tan(Math.min(rectangularSensor._xHalfAngle, CesiumMath.toRadians(89.0)));
+        var tanY = Math.tan(Math.min(rectangularSensor._yHalfAngle, CesiumMath.toRadians(89.0)));
         var theta = Math.atan(tanX / tanY);
         var cone = Math.atan(Math.sqrt(tanX * tanX + tanY * tanY));
 
@@ -2018,8 +1986,177 @@ define('RectangularSensorVisualizer',[
         assignSpherical(3, directions, -theta, cone);
 
         directions.length = 4;
-        primitive.directions = directions;
+        rectangularSensor._customSensor.directions = directions;
     }
+
+    var RectangularPyramidSensorVolume = function(options) {
+        options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+
+        var customSensorOptions = clone(options);
+        customSensorOptions._pickPrimitive = defaultValue(options._pickPrimitive, this);
+        customSensorOptions.directions = undefined;
+        this._customSensor = new CustomSensorVolume(customSensorOptions);
+
+        this._xHalfAngle = defaultValue(options.xHalfAngle, CesiumMath.PI_OVER_TWO);
+        this._yHalfAngle = defaultValue(options.yHalfAngle, CesiumMath.PI_OVER_TWO);
+
+        updateDirections(this);
+    };
+
+    defineProperties(RectangularPyramidSensorVolume.prototype, {
+        xHalfAngle : {
+            get : function() {
+                return this._xHalfAngle;
+            },
+            set : function(value) {
+                
+                if (this._xHalfAngle !== value) {
+                    this._xHalfAngle = value;
+                    updateDirections(this);
+                }
+            }
+        },
+        yHalfAngle : {
+            get : function() {
+                return this._yHalfAngle;
+            },
+            set : function(value) {
+                
+                if (this._yHalfAngle !== value) {
+                    this._yHalfAngle = value;
+                    updateDirections(this);
+                }
+            }
+        },
+        show : {
+            get : function() {
+                return this._customSensor.show;
+            },
+            set : function(value) {
+                this._customSensor.show = value;
+            }
+        },
+        showIntersection : {
+            get : function() {
+                return this._customSensor.showIntersection;
+            },
+            set : function(value) {
+                this._customSensor.showIntersection = value;
+            }
+        },
+        showThroughEllipsoid : {
+            get : function() {
+                return this._customSensor.showThroughEllipsoid;
+            },
+            set : function(value) {
+                this._customSensor.showThroughEllipsoid = value;
+            }
+        },
+        modelMatrix : {
+            get : function() {
+                return this._customSensor.modelMatrix;
+            },
+            set : function(value) {
+                this._customSensor.modelMatrix = value;
+            }
+        },
+        radius : {
+            get : function() {
+                return this._customSensor.radius;
+            },
+            set : function(value) {
+                this._customSensor.radius = value;
+            }
+        },
+        lateralSurfaceMaterial : {
+            get : function() {
+                return this._customSensor.lateralSurfaceMaterial;
+            },
+            set : function(value) {
+                this._customSensor.lateralSurfaceMaterial = value;
+            }
+        },
+        intersectionColor : {
+            get : function() {
+                return this._customSensor.intersectionColor;
+            },
+            set : function(value) {
+                this._customSensor.intersectionColor = value;
+            }
+        },
+        intersectionWidth : {
+            get : function() {
+                return this._customSensor.intersectionWidth;
+            },
+            set : function(value) {
+                this._customSensor.intersectionWidth = value;
+            }
+        },
+        id : {
+            get : function() {
+                return this._customSensor.id;
+            },
+            set : function(value) {
+                this._customSensor.id = value;
+            }
+        }
+    });
+
+    RectangularPyramidSensorVolume.prototype.update = function(context, frameState, commandList) {
+        this._customSensor.update(context, frameState, commandList);
+    };
+
+    RectangularPyramidSensorVolume.prototype.isDestroyed = function() {
+        return false;
+    };
+
+    RectangularPyramidSensorVolume.prototype.destroy = function() {
+        this._customSensor = this._customSensor && this._customSensor.destroy();
+        return destroyObject(this);
+    };
+
+    return RectangularPyramidSensorVolume;
+});
+/*global define*/
+define('RectangularSensorVisualizer',[
+        'Cesium/Core/AssociativeArray',
+        'Cesium/Core/Cartesian3',
+        'Cesium/Core/Color',
+        'Cesium/Core/defined',
+        'Cesium/Core/destroyObject',
+        'Cesium/Core/DeveloperError',
+        'Cesium/Core/Math',
+        'Cesium/Core/Matrix3',
+        'Cesium/Core/Matrix4',
+        'Cesium/Core/Quaternion',
+        'Cesium/Core/Spherical',
+        './RectangularPyramidSensorVolume',
+        'Cesium/DataSources/MaterialProperty',
+        'Cesium/DataSources/Property'
+    ], function(
+        AssociativeArray,
+        Cartesian3,
+        Color,
+        defined,
+        destroyObject,
+        DeveloperError,
+        CesiumMath,
+        Matrix3,
+        Matrix4,
+        Quaternion,
+        Spherical,
+        RectangularPyramidSensorVolume,
+        MaterialProperty,
+        Property) {
+    "use strict";
+
+    var defaultIntersectionColor = Color.WHITE;
+    var defaultIntersectionWidth = 1.0;
+    var defaultRadius = Number.POSITIVE_INFINITY;
+
+    var matrix3Scratch = new Matrix3();
+    var cachedPosition = new Cartesian3();
+    var cachedOrientation = new Quaternion();
 
     /**
      * A {@link Visualizer} which maps {@link Entity#rectangularSensor} to a {@link RectangularSensor}.
@@ -2080,16 +2217,14 @@ define('RectangularSensorVisualizer',[
 
             var primitive = defined(data) ? data.primitive : undefined;
             if (!defined(primitive)) {
-                primitive = new CustomSensorVolume();
+                primitive = new RectangularPyramidSensorVolume();
                 primitive.id = entity;
                 primitives.add(primitive);
 
                 data = {
                     primitive : primitive,
                     position : undefined,
-                    orientation : undefined,
-                    xHalfAngle : undefined,
-                    yHalfAngle : undefined
+                    orientation : undefined
                 };
                 hash[entity.id] = data;
             }
@@ -2101,18 +2236,8 @@ define('RectangularSensorVisualizer',[
             }
 
             primitive.show = true;
-
-            var xHalfAngle = Property.getValueOrDefault(rectangularSensorGraphics._xHalfAngle, time, CesiumMath.PI_OVER_TWO);
-            var yHalfAngle = Property.getValueOrDefault(rectangularSensorGraphics._yHalfAngle, time, CesiumMath.PI_OVER_TWO);
-
-            if (xHalfAngle !== data.xHalfAngle ||
-                yHalfAngle !== data.yHalfAngle) {
-
-                computeDirections(primitive, xHalfAngle, yHalfAngle);
-                data.xHalfAngle = xHalfAngle;
-                data.yHalfAngle = yHalfAngle;
-            }
-
+            primitive.xHalfAngle = Property.getValueOrDefault(rectangularSensorGraphics._xHalfAngle, time, CesiumMath.PI_OVER_TWO);
+            primitive.yHalfAngle = Property.getValueOrDefault(rectangularSensorGraphics._yHalfAngle, time, CesiumMath.PI_OVER_TWO);
             primitive.radius = Property.getValueOrDefault(rectangularSensorGraphics._radius, time, defaultRadius);
             primitive.lateralSurfaceMaterial = MaterialProperty.getValue(time, rectangularSensorGraphics._lateralSurfaceMaterial, primitive.lateralSurfaceMaterial);
             primitive.intersectionColor = Property.getValueOrClonedDefault(rectangularSensorGraphics._intersectionColor, time, defaultIntersectionColor, primitive.intersectionColor);
@@ -2390,6 +2515,7 @@ define('CesiumSensors',[
         './CustomPatternSensorGraphics',
         './CustomPatternSensorVisualizer',
         './CustomSensorVolume',
+        './RectangularPyramidSensorVolume',
         './RectangularSensorGraphics',
         './RectangularSensorVisualizer'
     ], function(
@@ -2399,6 +2525,7 @@ define('CesiumSensors',[
         CustomPatternSensorGraphics,
         CustomPatternSensorVisualizer,
         CustomSensorVolume,
+        RectangularPyramidSensorVolume,
         RectangularSensorGraphics,
         RectangularSensorVisualizer) {
     "use strict";
@@ -2411,6 +2538,7 @@ define('CesiumSensors',[
         CustomPatternSensorGraphics : CustomPatternSensorGraphics,
         CustomPatternSensorVisualizer : CustomPatternSensorVisualizer,
         CustomSensorVolume : CustomSensorVolume,
+        RectangularPyramidSensorVolume : RectangularPyramidSensorVolume,
         RectangularSensorGraphics : RectangularSensorGraphics,
         RectangularSensorVisualizer : RectangularSensorVisualizer
     };
@@ -2435,7 +2563,6 @@ define('Cesium/Core/Matrix3', function() { return Cesium["Matrix3"]; });
 define('Cesium/Core/Matrix4', function() { return Cesium["Matrix4"]; });
 define('Cesium/Core/Quaternion', function() { return Cesium["Quaternion"]; });
 define('Cesium/Core/Spherical', function() { return Cesium["Spherical"]; });
-define('Cesium/Scene/Material', function() { return Cesium["Material"]; });
 define('Cesium/DataSources/MaterialProperty', function() { return Cesium["MaterialProperty"]; });
 define('Cesium/DataSources/Property', function() { return Cesium["Property"]; });
 define('Cesium/Core/BoundingSphere', function() { return Cesium["BoundingSphere"]; });
@@ -2447,11 +2574,13 @@ define('Cesium/Renderer/createShaderSource', function() { return Cesium["createS
 define('Cesium/Renderer/DrawCommand', function() { return Cesium["DrawCommand"]; });
 define('Cesium/Scene/BlendingState', function() { return Cesium["BlendingState"]; });
 define('Cesium/Scene/CullFace', function() { return Cesium["CullFace"]; });
+define('Cesium/Scene/Material', function() { return Cesium["Material"]; });
 define('Cesium/Scene/Pass', function() { return Cesium["Pass"]; });
 define('Cesium/Scene/SceneMode', function() { return Cesium["SceneMode"]; });
 define('Cesium/Core/TimeInterval', function() { return Cesium["TimeInterval"]; });
 define('Cesium/DataSources/CzmlDataSource', function() { return Cesium["CzmlDataSource"]; });
 define('Cesium/DataSources/DataSourceDisplay', function() { return Cesium["DataSourceDisplay"]; });
+define('Cesium/Core/clone', function() { return Cesium["clone"]; });
 require(["CesiumSensors"], function(CesiumSensors) {
     var scope = typeof window !== "undefined" ? window : typeof self !== "undefined" ? self : {};
     scope.CesiumSensors = CesiumSensors;

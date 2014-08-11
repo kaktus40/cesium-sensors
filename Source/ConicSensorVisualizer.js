@@ -12,7 +12,6 @@ define([
         'Cesium/Core/Quaternion',
         'Cesium/Core/Spherical',
         './CustomSensorVolume',
-        'Cesium/Scene/Material',
         'Cesium/DataSources/MaterialProperty',
         'Cesium/DataSources/Property'
     ], function(
@@ -28,7 +27,6 @@ define([
         Quaternion,
         Spherical,
         CustomSensorVolume,
-        Material,
         MaterialProperty,
         Property) {
     "use strict";

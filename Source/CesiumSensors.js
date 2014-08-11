@@ -6,6 +6,7 @@ define([
         './CustomPatternSensorGraphics',
         './CustomPatternSensorVisualizer',
         './CustomSensorVolume',
+        './RectangularPyramidSensorVolume',
         './RectangularSensorGraphics',
         './RectangularSensorVisualizer'
     ], function(
@@ -15,6 +16,7 @@ define([
         CustomPatternSensorGraphics,
         CustomPatternSensorVisualizer,
         CustomSensorVolume,
+        RectangularPyramidSensorVolume,
         RectangularSensorGraphics,
         RectangularSensorVisualizer) {
     "use strict";
@@ -27,6 +29,7 @@ define([
         CustomPatternSensorGraphics : CustomPatternSensorGraphics,
         CustomPatternSensorVisualizer : CustomPatternSensorVisualizer,
         CustomSensorVolume : CustomSensorVolume,
+        RectangularPyramidSensorVolume : RectangularPyramidSensorVolume,
         RectangularSensorGraphics : RectangularSensorGraphics,
         RectangularSensorVisualizer : RectangularSensorVisualizer
     };
