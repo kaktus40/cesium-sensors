@@ -2129,7 +2129,6 @@ define('RectangularSensorVisualizer',[
         'Cesium/Core/Matrix3',
         'Cesium/Core/Matrix4',
         'Cesium/Core/Quaternion',
-        'Cesium/Core/Spherical',
         './RectangularPyramidSensorVolume',
         'Cesium/DataSources/MaterialProperty',
         'Cesium/DataSources/Property'
@@ -2144,7 +2143,6 @@ define('RectangularSensorVisualizer',[
         Matrix3,
         Matrix4,
         Quaternion,
-        Spherical,
         RectangularPyramidSensorVolume,
         MaterialProperty,
         Property) {
