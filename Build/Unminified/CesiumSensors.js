@@ -2545,6 +2545,7 @@ define('CesiumSensors',[
 "use strict";
 /*jshint sub:true*/
 /*global define,require,self,Cesium*/
+
 define('Cesium/Core/defaultValue', function() { return Cesium["defaultValue"]; });
 define('Cesium/Core/defined', function() { return Cesium["defined"]; });
 define('Cesium/Core/defineProperties', function() { return Cesium["defineProperties"]; });

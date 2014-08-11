@@ -19,6 +19,7 @@
 
     var shims = {};
     var minifiedGlslPaths = {};
+    var shaderLicenseComments = [];
 
     files.forEach(function(path) {
         if (/main\.js$/.test(path)) {
@@ -42,6 +43,13 @@
             }
         } else if (/\.glsl$/.test(path)) {
             var newContents = [];
+
+            contents = contents.replace(/\r\n/gm, '\n');
+
+            var licenseComments = contents.match(/\/\*\*(?:[^*\/]|\*(?!\/)|\n)*?@license(?:.|\n)*?\*\//gm);
+            if (licenseComments !== null) {
+                shaderLicenseComments = shaderLicenseComments.concat(licenseComments);
+            }
 
             // Remove comments. Code ported from
             // https://github.com/apache/ant/blob/master/src/main/org/apache/tools/ant/filters/StripJavaComments.java
@@ -92,7 +100,7 @@
 (function() {\n\
 "use strict";\n\
 /*jshint sub:true*/\n\
-/*global define,require,self,Cesium*/\n' + shims + '\n\
+/*global define,require,self,Cesium*/\n' + shaderLicenseComments.join('\n') + '\n' + shims + '\n\
 require(["CesiumSensors"], function(CesiumSensors) {\n\
     var scope = typeof window !== "undefined" ? window : typeof self !== "undefined" ? self : {};\n\
     scope.CesiumSensors = CesiumSensors;\n\
