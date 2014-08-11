@@ -80,12 +80,7 @@
         rectangularPyramidSensor.yHalfAngle = Cesium.Math.toRadians(20.0);
 
         rectangularPyramidSensor.lateralSurfaceMaterial = Cesium.Material.fromType('Color');
-        rectangularPyramidSensor.lateralSurfaceMaterial.uniforms.color = {
-            red : 0.0,
-            green : 1.0,
-            blue : 1.0,
-            alpha : 0.5
-        };
+        rectangularPyramidSensor.lateralSurfaceMaterial.uniforms.color = new Cesium.Color(0.0, 1.0, 1.0, 0.5);
         viewer.scene.primitives.add(rectangularPyramidSensor);
     }
 
