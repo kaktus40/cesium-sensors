@@ -1,6 +1,5 @@
 (function() {
     "use strict";
-
     /*jshint node:true*/
 
     var requirejs = require('requirejs');
@@ -10,23 +9,78 @@
         fs.mkdirSync('Build');
     }
 
+    if (!fs.existsSync('Build/MinifiedShaders')) {
+        fs.mkdirSync('Build/MinifiedShaders');
+    }
+
     process.chdir('Source');
 
     var files = fs.readdirSync('.');
 
     var shims = {};
+    var minifiedGlslPaths = {};
 
     files.forEach(function(path) {
+        if (/main\.js$/.test(path)) {
+            return;
+        }
+
         var contents = fs.readFileSync(path).toString();
 
-        var cesiumRequireRegex = /'Cesium\/\w*\/(\w*)'/g;
-        var match;
-        while ((match = cesiumRequireRegex.exec(contents)) !== null) {
-            if (match[0] in shims) {
-                continue;
+        if (/\.js$/.test(path)) {
+            // Search for Cesium modules and add shim
+            // modules that pull from the Cesium global
+
+            var cesiumRequireRegex = /'Cesium\/\w*\/(\w*)'/g;
+            var match;
+            while ((match = cesiumRequireRegex.exec(contents)) !== null) {
+                if (match[0] in shims) {
+                    continue;
+                }
+
+                shims[match[0]] = 'define(' + match[0] + ', function() { return Cesium["' + match[1] + '"]; });';
+            }
+        } else if (/\.glsl$/.test(path)) {
+            var newContents = [];
+
+            // Remove comments. Code ported from
+            // https://github.com/apache/ant/blob/master/src/main/org/apache/tools/ant/filters/StripJavaComments.java
+            for (var i = 0; i < contents.length; ++i) {
+                var c = contents.charAt(i);
+                if (c === '/') {
+                    c = contents.charAt(++i);
+                    if (c === '/') {
+                        while (c !== '\r' && c !== '\n' && i < contents.length) {
+                            c = contents.charAt(++i);
+                        }
+                    } else if (c === '*') {
+                        while (i < contents.length) {
+                            c = contents.charAt(++i);
+                            if (c === '*') {
+                                c = contents.charAt(++i);
+                                while (c === '*') {
+                                    c = contents.charAt(++i);
+                                }
+                                if (c === '/') {
+                                    c = contents.charAt(++i);
+                                    break;
+                                }
+                            }
+                        }
+                    } else {
+                        --i;
+                        c = '/';
+                    }
+                }
+                newContents.push(c);
             }
 
-            shims[match[0]] = 'define(' + match[0] + ', function() { return Cesium["' + match[1] + '"]; });';
+            newContents = newContents.join('');
+            newContents = newContents.replace(/\s+$/gm, '').replace(/^\s+/gm, '').replace(/\n+/gm, '\n');
+
+            var minifiedFile = '../Build/MinifiedShaders/' + path;
+            fs.writeFileSync(minifiedFile, newContents);
+            minifiedGlslPaths[path.replace(/\.glsl$/, '')] = minifiedFile.replace(/\.glsl$/, '');
         }
     });
 
@@ -38,8 +92,7 @@
 (function() {\n\
 "use strict";\n\
 /*jshint sub:true*/\n\
-/*global define,require,self,Cesium*/\n\
-\n' + shims + '\n\
+/*global define,require,self,Cesium*/\n' + shims + '\n\
 require(["CesiumSensors"], function(CesiumSensors) {\n\
     var scope = typeof window !== "undefined" ? window : typeof self !== "undefined" ? self : {};\n\
     scope.CesiumSensors = CesiumSensors;\n\
@@ -67,33 +120,23 @@ require(["CesiumSensors"], function(CesiumSensors) {\n\
         }
     };
 
-    function merge(o1, o2) {
-        var r = {};
-        var key;
-        for (key in o1) {
-            if (o1.hasOwnProperty(key)) {
-                r[key] = o1[key];
-            }
-        }
-        for (key in o2) {
-            if (o2.hasOwnProperty(key)) {
-                r[key] = o2[key];
-            }
-        }
-        return r;
-    }
+    var unminifiedRjsConfig = JSON.parse(JSON.stringify(rjsConfig));
+    unminifiedRjsConfig.optimize = 'none';
+    unminifiedRjsConfig.out = '../Build/Unminified/CesiumSensors.js';
 
-    requirejs.optimize(merge(rjsConfig, {
-        optimize : 'none',
-        out : '../Build/Unminified/CesiumSensors.js'
-    }), function(buildResponse) {
+    requirejs.optimize(unminifiedRjsConfig, function(buildResponse) {
         console.log('Built unminified CesiumSensors.js successfully.');
     });
 
-    requirejs.optimize(merge(rjsConfig, {
-        optimize : 'uglify2',
-        out : '../Build/CesiumSensors.js'
-    }), function(buildResponse) {
+    var minifiedRjsConfig = JSON.parse(JSON.stringify(rjsConfig));
+
+    minifiedRjsConfig.optimize = 'uglify2';
+    minifiedRjsConfig.out = '../Build/CesiumSensors.js';
+    Object.keys(minifiedGlslPaths).forEach(function(key) {
+        minifiedRjsConfig.paths[key] = minifiedGlslPaths[key];
+    });
+
+    requirejs.optimize(minifiedRjsConfig, function(buildResponse) {
         console.log('Built minified CesiumSensors.js successfully.');
     });
 })();
