@@ -5,6 +5,7 @@ define([
         'Cesium/Core/defineProperties',
         'Cesium/Core/DeveloperError',
         'Cesium/Core/Event',
+        'Cesium/DataSources/createMaterialPropertyDescriptor',
         'Cesium/DataSources/createPropertyDescriptor'
     ], function(
         defaultValue,
@@ -12,6 +13,7 @@ define([
         defineProperties,
         DeveloperError,
         Event,
+        createMaterialPropertyDescriptor,
         createPropertyDescriptor) {
     "use strict";
 
@@ -21,7 +23,7 @@ define([
      * @alias ConicSensorGraphics
      * @constructor
      */
-    var ConicSensorGraphics = function() {
+    var ConicSensorGraphics = function(options) {
         this._minimumClockAngle = undefined;
         this._minimumClockAngleSubscription = undefined;
         this._maximumClockAngle = undefined;
@@ -43,6 +45,8 @@ define([
         this._show = undefined;
         this._showSubscription = undefined;
         this._definitionChanged = new Event();
+
+        this.merge(defaultValue(options, defaultValue.EMPTY_OBJECT));
     };
 
     defineProperties(ConicSensorGraphics.prototype, {
@@ -92,7 +96,7 @@ define([
          * @memberof ConicSensorGraphics.prototype
          * @type {MaterialProperty}
          */
-        lateralSurfaceMaterial : createPropertyDescriptor('lateralSurfaceMaterial'),
+        lateralSurfaceMaterial : createMaterialPropertyDescriptor('lateralSurfaceMaterial'),
 
         /**
          * Gets or sets the {@link Color} {@link Property} specifying the color of the line formed by the intersection of the cone and other central bodies.

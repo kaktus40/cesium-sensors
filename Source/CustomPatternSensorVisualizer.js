@@ -61,7 +61,7 @@ define([
         this._hash = {};
         this._entitiesToVisualize = new AssociativeArray();
 
-        this._onCollectionChanged(entityCollection, entityCollection.entities, [], []);
+        this._onCollectionChanged(entityCollection, entityCollection.values, [], []);
     };
 
     /**

@@ -182,7 +182,7 @@ var afterAll;
         waitSeconds : 30
     });
 
-    var cesiumBase = 'http://cesiumjs.org/releases/1.0/';
+    var cesiumBase = 'http://cesiumjs.org/releases/1.6/';
 
     require.config({
         baseUrl : '../Source',

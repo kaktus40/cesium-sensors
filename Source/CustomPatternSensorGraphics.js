@@ -5,6 +5,7 @@ define([
         'Cesium/Core/defineProperties',
         'Cesium/Core/DeveloperError',
         'Cesium/Core/Event',
+        'Cesium/DataSources/createMaterialPropertyDescriptor',
         'Cesium/DataSources/createPropertyDescriptor'
     ], function(
         defaultValue,
@@ -12,6 +13,7 @@ define([
         defineProperties,
         DeveloperError,
         Event,
+        createMaterialPropertyDescriptor,
         createPropertyDescriptor) {
     "use strict";
 
@@ -21,7 +23,7 @@ define([
      * @alias CustomPatternSensorGraphics
      * @constructor
      */
-    var CustomPatternSensorGraphics = function() {
+    var CustomPatternSensorGraphics = function(options) {
         this._directions = undefined;
         this._directionsSubscription = undefined;
 
@@ -39,6 +41,8 @@ define([
         this._show = undefined;
         this._showSubscription = undefined;
         this._definitionChanged = new Event();
+
+        this.merge(defaultValue(options, defaultValue.EMPTY_OBJECT));
     };
 
     defineProperties(CustomPatternSensorGraphics.prototype, {
@@ -67,7 +71,7 @@ define([
          * @memberof CustomPatternSensorGraphics.prototype
          * @type {MaterialProperty}
          */
-        lateralSurfaceMaterial : createPropertyDescriptor('lateralSurfaceMaterial'),
+        lateralSurfaceMaterial : createMaterialPropertyDescriptor('lateralSurfaceMaterial'),
 
         /**
          * Gets or sets the {@link Color} {@link Property} specifying the color of the line formed by the intersection of the sensor and other central bodies.

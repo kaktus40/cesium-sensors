@@ -13,7 +13,7 @@ define([
         'Cesium/Core/Matrix4',
         'Cesium/Core/PrimitiveType',
         'Cesium/Renderer/BufferUsage',
-        'Cesium/Renderer/createShaderSource',
+        'Cesium/Renderer/ShaderSource',
         'Cesium/Renderer/DrawCommand',
         'text!./CustomSensorVolumeFS.glsl',
         'text!./CustomSensorVolumeVS.glsl',
@@ -37,7 +37,7 @@ define([
         Matrix4,
         PrimitiveType,
         BufferUsage,
-        createShaderSource,
+        ShaderSource,
         DrawCommand,
         CustomSensorVolumeFS,
         CustomSensorVolumeVS,
@@ -479,7 +479,7 @@ define([
 
             // Recompile shader when material changes
             if (materialChanged || !defined(frontFaceColorCommand.shaderProgram)) {
-                var fsSource = createShaderSource({
+                var fsSource = new ShaderSource({
                     sources : [ShadersSensorVolume, this._lateralSurfaceMaterial.shaderSource, CustomSensorVolumeFS]
                 });
 
@@ -515,7 +515,7 @@ define([
 
             // Recompile shader when material changes
             if (materialChanged || !defined(pickCommand.shaderProgram)) {
-                var pickFS = createShaderSource({
+                var pickFS = new ShaderSource({
                     sources : [ShadersSensorVolume, this._lateralSurfaceMaterial.shaderSource, CustomSensorVolumeFS],
                     pickColorQualifier : 'uniform'
                 });

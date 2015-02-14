@@ -6,7 +6,7 @@
 
 **cesium-sensors**: A Cesium plugin for visualizing sensor volumes.
 
-**Cesium version**: Tested against [1.0](http://cesiumjs.org/downloads.html). Post a message to the [Cesium forum](http://cesiumjs.org/forum.html) if you have compatibility issues.
+**Cesium version**: Tested against [1.6](http://cesiumjs.org/downloads.html). Post a message to the [Cesium forum](http://cesiumjs.org/forum.html) if you have compatibility issues.
 
 **License**: Apache 2.0.  Free for commercial and non-commercial use.  See [LICENSE.md](LICENSE.md).
 
