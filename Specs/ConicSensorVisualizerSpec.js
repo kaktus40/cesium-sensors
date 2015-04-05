@@ -12,8 +12,7 @@ defineSuite([
         'ConicSensorGraphics',
         'DataSources/ConstantProperty',
         'DataSources/EntityCollection',
-        'Specs/createScene',
-        'Specs/destroyScene'
+        'Specs/createScene'
     ], function(
         ConicSensorVisualizer,
         Cartesian3,
@@ -27,8 +26,7 @@ defineSuite([
         ConicSensorGraphics,
         ConstantProperty,
         EntityCollection,
-        createScene,
-        destroyScene) {
+        createScene) {
     "use strict";
     /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn,runs,waits,waitsFor*/
 
@@ -40,7 +38,7 @@ defineSuite([
     });
 
     afterAll(function() {
-        destroyScene(scene);
+        scene.destroyForSpecs();
     });
 
     afterEach(function() {
@@ -116,6 +114,7 @@ defineSuite([
 
         var testObject = entityCollection.getOrCreateEntity('test');
         testObject.addProperty('conicSensor');
+        testObject.show = true;
         testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
         testObject.orientation = new ConstantProperty(new Quaternion(0, 0, Math.sin(CesiumMath.PI_OVER_FOUR), Math.cos(CesiumMath.PI_OVER_FOUR)));
 
@@ -144,9 +143,18 @@ defineSuite([
         expect(c.show).toEqual(testObject.conicSensor.show.getValue(time));
         expect(c.lateralSurfaceMaterial.uniforms).toEqual(testObject.conicSensor.lateralSurfaceMaterial.getValue(time));
 
+        testObject.show = false;
+        visualizer.update(time);
+        expect(c.show).toBe(false);
+
+        testObject.show = true;
+        visualizer.update(time);
+        expect(c.show).toBe(true);
+
         conicSensor.show.setValue(false);
         visualizer.update(time);
-        expect(c.show).toEqual(false);
+        expect(c.show).toBe(false);
+
     });
 
     it('IntersectionColor is set correctly with multiple conicSensors.', function() {
