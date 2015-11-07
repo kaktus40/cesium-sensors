@@ -3,3 +3,4 @@
 node_modules/
 Source/main.js
 Build/MinifiedShaders/
+ThirdParty/
