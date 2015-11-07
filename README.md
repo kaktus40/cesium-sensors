@@ -37,7 +37,7 @@ entity.conicSensor.intersectionColor = new Cesium.ConstantProperty(new Cesium.Co
 
 **Example**
 
-Simple examples are included in the [Examples](Examples/) folder.  To run locally, run `npm install`, then run `node server.js` and navigate to [http://localhost:8080](http://localhost:8080) and select the example application to run.
+Simple examples are included in the [Examples](Examples/) folder.  To run locally, run `npm start` and navigate to [http://localhost:8080](http://localhost:8080) and select the example application to run.
 
 **Build**
 
