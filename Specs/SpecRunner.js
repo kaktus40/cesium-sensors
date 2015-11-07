@@ -194,7 +194,7 @@ var afterAll;
             'CesiumSensorSpecs' : '../Specs',
             'Specs' : cesiumBase + '/Specs',
 
-            'text' : '../ThirdParty/requirejs-2.1.14/text'
+            'text' : '../ThirdParty/text/text'
         },
         map : {
             '*' : {

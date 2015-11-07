@@ -121,10 +121,10 @@ require(["CesiumSensors"], function(CesiumSensors) {\n\
             start : copyrightHeader + '(function() {',
             end : '})();'
         },
-        name : '../ThirdParty/almond-0.2.9/almond.js',
+        name : '../ThirdParty/almond/almond.js',
         include : 'main',
         paths : {
-            'text' : '../ThirdParty/requirejs-2.1.14/text'
+            'text' : '../ThirdParty/text/text'
         }
     };
 

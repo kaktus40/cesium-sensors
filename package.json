@@ -9,10 +9,16 @@
     "url": "https://github.com/AnalyticalGraphicsInc/cesium-sensors.git"
   },
   "devDependencies": {
+    "bower": "^1.6.5",
     "compression": "1.0.8",
     "express": "4.4.4",
     "request": "2.36.0",
-    "requirejs": "2.1.14",
+    "requirejs": "2.1.20",
     "yargs": "1.2.6"
+  },
+  "scripts": {
+    "postinstall": "bower install",
+    "prestart": "node build.js",
+    "start": "node server.js"
   }
 }
