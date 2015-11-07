@@ -128,7 +128,7 @@ defineSuite([
         rectangularSensor.showIntersection = new ConstantProperty(true);
         rectangularSensor.radius = new ConstantProperty(123.5);
         rectangularSensor.show = new ConstantProperty(true);
-        rectangularSensor.lateralSurfaceMaterial = ColorMaterialProperty.fromColor(Color.WHITE);
+        rectangularSensor.lateralSurfaceMaterial = new ColorMaterialProperty(Color.WHITE);
         visualizer.update(time);
 
         expect(scene.primitives.length).toEqual(1);

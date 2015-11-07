@@ -645,9 +645,13 @@ define('CustomSensorVolume',[
         'Cesium/Core/DeveloperError',
         'Cesium/Core/Matrix4',
         'Cesium/Core/PrimitiveType',
+        'Cesium/Renderer/Buffer',
         'Cesium/Renderer/BufferUsage',
         'Cesium/Renderer/ShaderSource',
         'Cesium/Renderer/DrawCommand',
+        'Cesium/Renderer/RenderState',
+        'Cesium/Renderer/ShaderProgram',
+        'Cesium/Renderer/VertexArray',
         'text!./CustomSensorVolumeFS.glsl',
         'text!./CustomSensorVolumeVS.glsl',
         'text!./SensorVolume.glsl',
@@ -669,9 +673,13 @@ define('CustomSensorVolume',[
         DeveloperError,
         Matrix4,
         PrimitiveType,
+        Buffer,
         BufferUsage,
         ShaderSource,
         DrawCommand,
+        RenderState,
+        ShaderProgram,
+        VertexArray,
         CustomSensorVolumeFS,
         CustomSensorVolumeVS,
         ShadersSensorVolume,
@@ -947,7 +955,12 @@ define('CustomSensorVolume',[
             vertices[k++] = n.z;
         }
 
-        var vertexBuffer = context.createVertexBuffer(new Float32Array(vertices), BufferUsage.STATIC_DRAW);
+        var vertexBuffer = Buffer.createVertexBuffer({
+            context: context,
+            typedArray: new Float32Array(vertices),
+            usage: BufferUsage.STATIC_DRAW
+        });
+
         var stride = 2 * 3 * Float32Array.BYTES_PER_ELEMENT;
 
         var attributes = [{
@@ -966,7 +979,10 @@ define('CustomSensorVolume',[
             strideInBytes : stride
         }];
 
-        return context.createVertexArray(attributes);
+        return new VertexArray({
+            context: context,
+            attributes: attributes
+        });
     }
 
     /**
@@ -980,11 +996,14 @@ define('CustomSensorVolume',[
      * @exception {DeveloperError} this.radius must be greater than or equal to zero.
      * @exception {DeveloperError} this.lateralSurfaceMaterial must be defined.
      */
-    CustomSensorVolume.prototype.update = function(context, frameState, commandList) {
+    CustomSensorVolume.prototype.update = function(frameState) {
         this._mode = frameState.mode;
         if (!this.show || this._mode !== SceneMode.SCENE3D) {
             return;
         }
+
+        var context = frameState.context;
+        var commandList = frameState.commandList;
 
         
         var translucent = this.lateralSurfaceMaterial.isTranslucent();
@@ -1000,7 +1019,7 @@ define('CustomSensorVolume',[
             var rs;
 
             if (translucent) {
-                rs = context.createRenderState({
+                rs = RenderState.fromCache({
                     depthTest : {
                         // This would be better served by depth testing with a depth buffer that does not
                         // include the ellipsoid depth - or a g-buffer containing an ellipsoid mask
@@ -1018,7 +1037,7 @@ define('CustomSensorVolume',[
                 this._frontFaceColorCommand.renderState = rs;
                 this._frontFaceColorCommand.pass = Pass.TRANSLUCENT;
 
-                rs = context.createRenderState({
+                rs = RenderState.fromCache({
                     depthTest : {
                         enabled : !this.showThroughEllipsoid
                     },
@@ -1033,7 +1052,7 @@ define('CustomSensorVolume',[
                 this._backFaceColorCommand.renderState = rs;
                 this._backFaceColorCommand.pass = Pass.TRANSLUCENT;
 
-                rs = context.createRenderState({
+                rs = RenderState.fromCache({
                     depthTest : {
                         enabled : !this.showThroughEllipsoid
                     },
@@ -1042,7 +1061,7 @@ define('CustomSensorVolume',[
                 });
                 this._pickCommand.renderState = rs;
             } else {
-                rs = context.createRenderState({
+                rs = RenderState.fromCache({
                     depthTest : {
                         enabled : true
                     },
@@ -1051,7 +1070,7 @@ define('CustomSensorVolume',[
                 this._frontFaceColorCommand.renderState = rs;
                 this._frontFaceColorCommand.pass = Pass.OPAQUE;
 
-                rs = context.createRenderState({
+                rs = RenderState.fromCache({
                     depthTest : {
                         enabled : true
                     },
@@ -1108,8 +1127,14 @@ define('CustomSensorVolume',[
                     sources : [ShadersSensorVolume, this._lateralSurfaceMaterial.shaderSource, CustomSensorVolumeFS]
                 });
 
-                frontFaceColorCommand.shaderProgram = context.replaceShaderProgram(
-                        frontFaceColorCommand.shaderProgram, CustomSensorVolumeVS, fsSource, attributeLocations);
+                frontFaceColorCommand.shaderProgram = ShaderProgram.replaceCache({
+                    context: context,
+                    shaderProgram: frontFaceColorCommand.shaderProgram,
+                    vertexShaderSource: CustomSensorVolumeVS,
+                    fragmentShaderSource: fsSource,
+                    attributeLocations: attributeLocations
+                });
+
                 frontFaceColorCommand.uniformMap = combine(this._uniforms, this._lateralSurfaceMaterial._uniforms);
 
                 backFaceColorCommand.shaderProgram = frontFaceColorCommand.shaderProgram;
@@ -1145,8 +1170,13 @@ define('CustomSensorVolume',[
                     pickColorQualifier : 'uniform'
                 });
 
-                pickCommand.shaderProgram = context.replaceShaderProgram(
-                    pickCommand.shaderProgram, CustomSensorVolumeVS, pickFS, attributeLocations);
+                pickCommand.shaderProgram = ShaderProgram.replaceCache({
+                    context: context,
+                    shaderProgram: pickCommand.shaderProgram,
+                    vertexShaderSource: CustomSensorVolumeVS,
+                    fragmentShaderSource: pickFS,
+                    attributeLocations: attributeLocations
+                });
 
                 var that = this;
                 var uniforms = {
@@ -1305,7 +1335,7 @@ define('ConicSensorVisualizer',[
             var position;
             var orientation;
             var data = hash[entity.id];
-            var show = entity.isAvailable(time) && Property.getValueOrDefault(conicSensorGraphics._show, time, true);
+            var show = entity.isShowing && entity.isAvailable(time) && Property.getValueOrDefault(conicSensorGraphics._show, time, true);
 
             if (show) {
                 position = Property.getValueOrUndefined(entity._position, time, cachedPosition);
@@ -1671,7 +1701,7 @@ define('CustomPatternSensorVisualizer',[
             var orientation;
             var directions;
             var data = hash[entity.id];
-            var show = entity.isAvailable(time) && Property.getValueOrDefault(customPatternSensorGraphics._show, time, true);
+            var show = entity.isShowing && entity.isAvailable(time) && Property.getValueOrDefault(customPatternSensorGraphics._show, time, true);
 
             if (show) {
                 position = Property.getValueOrUndefined(entity._position, time, cachedPosition);
@@ -2110,8 +2140,8 @@ define('RectangularPyramidSensorVolume',[
         }
     });
 
-    RectangularPyramidSensorVolume.prototype.update = function(context, frameState, commandList) {
-        this._customSensor.update(context, frameState, commandList);
+    RectangularPyramidSensorVolume.prototype.update = function(frameState) {
+        this._customSensor.update(frameState);
     };
 
     RectangularPyramidSensorVolume.prototype.isDestroyed = function() {
@@ -2125,6 +2155,7 @@ define('RectangularPyramidSensorVolume',[
 
     return RectangularPyramidSensorVolume;
 });
+
 /*global define*/
 define('RectangularSensorVisualizer',[
         'Cesium/Core/AssociativeArray',
@@ -2182,7 +2213,7 @@ define('RectangularSensorVisualizer',[
         this._hash = {};
         this._entitiesToVisualize = new AssociativeArray();
 
-        this._onCollectionChanged(entityCollection, entityCollection.entities, [], []);
+        this._onCollectionChanged(entityCollection, entityCollection.values, [], []);
     };
 
     /**
@@ -2205,7 +2236,7 @@ define('RectangularSensorVisualizer',[
             var position;
             var orientation;
             var data = hash[entity.id];
-            var show = entity.isAvailable(time) && Property.getValueOrDefault(rectangularSensorGraphics._show, time, true);
+            var show = entity.isShowing && entity.isAvailable(time) && Property.getValueOrDefault(rectangularSensorGraphics._show, time, true);
 
             if (show) {
                 position = Property.getValueOrUndefined(entity._position, time, cachedPosition);
@@ -2576,9 +2607,13 @@ define('Cesium/Core/BoundingSphere', function() { return Cesium["BoundingSphere"
 define('Cesium/Core/combine', function() { return Cesium["combine"]; });
 define('Cesium/Core/ComponentDatatype', function() { return Cesium["ComponentDatatype"]; });
 define('Cesium/Core/PrimitiveType', function() { return Cesium["PrimitiveType"]; });
+define('Cesium/Renderer/Buffer', function() { return Cesium["Buffer"]; });
 define('Cesium/Renderer/BufferUsage', function() { return Cesium["BufferUsage"]; });
 define('Cesium/Renderer/ShaderSource', function() { return Cesium["ShaderSource"]; });
 define('Cesium/Renderer/DrawCommand', function() { return Cesium["DrawCommand"]; });
+define('Cesium/Renderer/RenderState', function() { return Cesium["RenderState"]; });
+define('Cesium/Renderer/ShaderProgram', function() { return Cesium["ShaderProgram"]; });
+define('Cesium/Renderer/VertexArray', function() { return Cesium["VertexArray"]; });
 define('Cesium/Scene/BlendingState', function() { return Cesium["BlendingState"]; });
 define('Cesium/Scene/CullFace', function() { return Cesium["CullFace"]; });
 define('Cesium/Scene/Material', function() { return Cesium["Material"]; });

@@ -125,7 +125,7 @@ defineSuite([
         customPatternSensor.showIntersection = new ConstantProperty(true);
         customPatternSensor.radius = new ConstantProperty(123.5);
         customPatternSensor.show = new ConstantProperty(true);
-        customPatternSensor.lateralSurfaceMaterial = ColorMaterialProperty.fromColor(Color.WHITE);
+        customPatternSensor.lateralSurfaceMaterial = new ColorMaterialProperty(Color.WHITE);
         visualizer.update(time);
 
         expect(scene.primitives.length).toEqual(1);

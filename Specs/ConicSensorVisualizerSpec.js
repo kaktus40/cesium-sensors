@@ -128,7 +128,7 @@ defineSuite([
         conicSensor.showIntersection = new ConstantProperty(true);
         conicSensor.radius = new ConstantProperty(123.5);
         conicSensor.show = new ConstantProperty(true);
-        conicSensor.lateralSurfaceMaterial = new ColorMaterialProperty.fromColor(Color.WHITE);
+        conicSensor.lateralSurfaceMaterial = new ColorMaterialProperty(Color.WHITE);
 
         visualizer.update(time);
         expect(scene.primitives.length).toEqual(1);
