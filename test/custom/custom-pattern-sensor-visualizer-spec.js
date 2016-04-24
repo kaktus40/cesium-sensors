@@ -1,7 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 define([
-	'custom-pattern-sensor-graphics',
-	'custom-pattern-sensor-visualizer',
+	'custom/custom-pattern-sensor-graphics',
+	'custom/custom-pattern-sensor-visualizer',
 	'Cesium/Core/Cartesian3',
 	'Cesium/Core/Color',
 	'Cesium/Core/JulianDate',
@@ -13,8 +13,8 @@ define([
 	'Cesium/DataSources/ColorMaterialProperty',
 	'Cesium/DataSources/ConstantProperty',
 	'Cesium/DataSources/EntityCollection',
-	'./util/create-scene',
-	'./matchers/add-to-throw-developer-error-matcher'
+	'../util/create-scene',
+	'../matchers/add-to-throw-developer-error-matcher'
 ], function(
 	CustomPatternSensorGraphics,
 	CustomPatternSensorVisualizer,

@@ -1,12 +1,12 @@
 /* eslint-disable max-nested-callbacks */
 define([
-	'rectangular-sensor-graphics',
+	'custom/custom-pattern-sensor-graphics',
 	'Cesium/Core/Color',
 	'Cesium/DataSources/ColorMaterialProperty',
 	'Cesium/DataSources/ConstantProperty',
-	'./matchers/add-to-throw-developer-error-matcher'
+	'../matchers/add-to-throw-developer-error-matcher'
 ], function(
-	RectangularSensorGraphics,
+	CustomPatternSensorGraphics,
 	Color,
 	ColorMaterialProperty,
 	ConstantProperty,
@@ -16,27 +16,25 @@ define([
 
 	/* global describe, it, beforeEach, expect */
 
-	describe('rectangular sensor graphics', function() {
+	describe('custom pattern sensor graphics', function() {
 		describe('merge', function() {
 			beforeEach(addToThrowDeveloperErrorMatcher);
 
 			it('should assign unassigned properties', function() {
-				var source = new RectangularSensorGraphics();
+				var source = new CustomPatternSensorGraphics();
 				source.lateralSurfaceMaterial = new ColorMaterialProperty();
-				source.xHalfAngle = new ConstantProperty();
-				source.yHalfAngle = new ConstantProperty();
-				source.intersectionColor = new ConstantProperty();
-				source.radius = new ConstantProperty();
-				source.show = new ConstantProperty();
-				source.showIntersection = new ConstantProperty();
-				source.intersectionWidth = new ConstantProperty();
+				source.directions = new ConstantProperty([]);
+				source.intersectionColor = new ConstantProperty(Color.WHITE);
+				source.radius = new ConstantProperty(1);
+				source.show = new ConstantProperty(true);
+				source.showIntersection = new ConstantProperty(true);
+				source.intersectionWidth = new ConstantProperty(1);
 
-				var target = new RectangularSensorGraphics();
+				var target = new CustomPatternSensorGraphics();
 				target.merge(source);
 
 				expect(target.lateralSurfaceMaterial).toBe(source.lateralSurfaceMaterial);
-				expect(target.xHalfAngle).toBe(source.xHalfAngle);
-				expect(target.yHalfAngle).toBe(source.yHalfAngle);
+				expect(target.directions).toBe(source.directions);
 				expect(target.intersectionColor).toBe(source.intersectionColor);
 				expect(target.radius).toBe(source.radius);
 				expect(target.show).toBe(source.show);
@@ -45,29 +43,26 @@ define([
 			});
 
 			it('should not assign assigned properties', function() {
-				var source = new RectangularSensorGraphics();
+				var source = new CustomPatternSensorGraphics();
 				source.lateralSurfaceMaterial = new ColorMaterialProperty();
-				source.xHalfAngle = new ConstantProperty();
-				source.yHalfAngle = new ConstantProperty();
-				source.intersectionColor = new ConstantProperty();
-				source.radius = new ConstantProperty();
-				source.show = new ConstantProperty();
-				source.showIntersection = new ConstantProperty();
-				source.intersectionWidth = new ConstantProperty();
+				source.directions = new ConstantProperty([]);
+				source.intersectionColor = new ConstantProperty(Color.WHITE);
+				source.radius = new ConstantProperty(1);
+				source.show = new ConstantProperty(true);
+				source.showIntersection = new ConstantProperty(true);
+				source.intersectionWidth = new ConstantProperty(1);
 
 				var lateralSurfaceMaterial = new ColorMaterialProperty();
-				var xHalfAngle = new ConstantProperty();
-				var yHalfAngle = new ConstantProperty();
-				var intersectionColor = new ConstantProperty();
-				var radius = new ConstantProperty();
-				var show = new ConstantProperty();
-				var showIntersection = new ConstantProperty();
-				var intersectionWidth = new ConstantProperty();
+				var directions = new ConstantProperty([]);
+				var intersectionColor = new ConstantProperty(Color.WHITE);
+				var radius = new ConstantProperty(1);
+				var show = new ConstantProperty(true);
+				var showIntersection = new ConstantProperty(true);
+				var intersectionWidth = new ConstantProperty(1);
 
-				var target = new RectangularSensorGraphics();
+				var target = new CustomPatternSensorGraphics();
 				target.lateralSurfaceMaterial = lateralSurfaceMaterial;
-				target.xHalfAngle = xHalfAngle;
-				target.yHalfAngle = yHalfAngle;
+				target.directions = directions;
 				target.intersectionColor = intersectionColor;
 				target.radius = radius;
 				target.show = show;
@@ -77,8 +72,7 @@ define([
 				target.merge(source);
 
 				expect(target.lateralSurfaceMaterial).toBe(lateralSurfaceMaterial);
-				expect(target.xHalfAngle).toBe(xHalfAngle);
-				expect(target.yHalfAngle).toBe(yHalfAngle);
+				expect(target.directions).toBe(directions);
 				expect(target.intersectionColor).toBe(intersectionColor);
 				expect(target.radius).toBe(radius);
 				expect(target.show).toBe(show);
@@ -86,8 +80,8 @@ define([
 				expect(target.intersectionWidth).toBe(intersectionWidth);
 			});
 
-			it('should throws if source undefined', function() {
-				var target = new RectangularSensorGraphics();
+			it('should throw if source undefined', function() {
+				var target = new CustomPatternSensorGraphics();
 				expect(function() {
 					target.merge(undefined);
 				}).toThrowDeveloperError();
@@ -95,20 +89,18 @@ define([
 		});
 
 		it('should clone', function() {
-			var source = new RectangularSensorGraphics();
+			var source = new CustomPatternSensorGraphics();
 			source.lateralSurfaceMaterial = new ColorMaterialProperty();
-			source.xHalfAngle = new ConstantProperty();
-			source.yHalfAngle = new ConstantProperty();
-			source.intersectionColor = new ConstantProperty();
-			source.radius = new ConstantProperty();
-			source.show = new ConstantProperty();
-			source.showIntersection = new ConstantProperty();
-			source.intersectionWidth = new ConstantProperty();
+			source.directions = new ConstantProperty([]);
+			source.intersectionColor = new ConstantProperty(Color.WHITE);
+			source.radius = new ConstantProperty(1);
+			source.show = new ConstantProperty(true);
+			source.showIntersection = new ConstantProperty(true);
+			source.intersectionWidth = new ConstantProperty(1);
 
 			var result = source.clone();
 			expect(result.lateralSurfaceMaterial).toBe(source.lateralSurfaceMaterial);
-			expect(result.xHalfAngle).toBe(source.xHalfAngle);
-			expect(result.yHalfAngle).toBe(source.yHalfAngle);
+			expect(result.directions).toBe(source.directions);
 			expect(result.intersectionColor).toBe(source.intersectionColor);
 			expect(result.radius).toBe(source.radius);
 			expect(result.show).toBe(source.show);

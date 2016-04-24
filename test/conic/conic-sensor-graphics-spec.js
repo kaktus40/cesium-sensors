@@ -1,10 +1,10 @@
 /* eslint-disable max-nested-callbacks */
 define([
-	'conic-sensor-graphics',
+	'conic/conic-sensor-graphics',
 	'Cesium/Core/Color',
 	'Cesium/DataSources/ColorMaterialProperty',
 	'Cesium/DataSources/ConstantProperty',
-	'./matchers/add-to-throw-developer-error-matcher'
+	'../matchers/add-to-throw-developer-error-matcher'
 ], function(
 	ConicSensorGraphics,
 	Color,
