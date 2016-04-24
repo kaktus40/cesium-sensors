@@ -100,8 +100,8 @@ gulp.task('scripts', ['create-main-js', 'shaders'], function() {
 
 	// Use minified versions of shaders
 	globby.sync(['lib/**/*.glsl']).forEach(function(shader) {
-		shader = shader.replace(/\\/g, '/').replace(/\.glsl$/, '');
-		minifiedOptions.paths[shader] = path.join('.tmp/shaders', shader);
+		shader = path.relative('lib', shader).replace(/\\/g, '/').replace(/\.glsl$/, '');
+		minifiedOptions.paths[shader] = path.join('../.tmp/shaders', shader);
 	});
 
 	var minified = optimize(minifiedOptions).pipe(uglify());
