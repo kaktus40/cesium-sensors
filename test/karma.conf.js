@@ -1,12 +1,5 @@
-/* eslint-env node */
 module.exports = function(config) {
 	'use strict';
-
-	var browsers = ['Chrome'];
-	if (process.env.TRAVIS) {
-		browsers = ['Chrome_no_sandbox'];
-	}
-
 	config.set({
 
 		// base path that will be used to resolve all patterns (eg. files, exclude)
@@ -58,18 +51,9 @@ module.exports = function(config) {
 		// enable / disable watching file and executing tests whenever any file changes
 		autoWatch: true,
 
-		// custom chrome launcher for use on Travis CI
-		customLaunchers: {
-			// eslint-disable-next-line camelcase
-			Chrome_no_sandbox: {
-				base: 'Chrome',
-				flags: ['--no-sandbox']
-			}
-		},
-
 		// start these browsers
 		// available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-		browsers: browsers,
+		browsers: ['Chrome'],
 
 		// Continuous Integration mode
 		// if true, Karma captures browsers, runs the tests and exits
