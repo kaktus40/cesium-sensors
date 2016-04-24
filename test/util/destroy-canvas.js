@@ -2,11 +2,9 @@
 define(function() {
 	'use strict';
 
-	function destroyCanvas(canvas) {
+	return function destroyCanvas(canvas) {
 		if (canvas) {
 			document.body.removeChild(canvas);
 		}
-	}
-
-	return destroyCanvas;
+	};
 });

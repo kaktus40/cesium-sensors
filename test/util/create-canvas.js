@@ -6,7 +6,7 @@ define(function(require) {
 
 	var canvasCount = 0;
 
-	function createCanvas(width, height) {
+	return function createCanvas(width, height) {
 		width = defaultValue(width, 1);
 		height = defaultValue(height, 1);
 
@@ -20,7 +20,5 @@ define(function(require) {
 		document.body.appendChild(canvas);
 
 		return canvas;
-	}
-
-	return createCanvas;
+	};
 });

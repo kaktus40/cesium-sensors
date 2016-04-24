@@ -13,8 +13,8 @@ define([
 	'Cesium/DataSources/ConstantProperty',
 	'Cesium/DataSources/EntityCollection',
 	'RectangularSensorGraphics',
-	'./Util/createScene',
-	'./Matchers/addToThrowDeveloperErrorMatcher'
+	'./util/create-scene',
+	'./matchers/add-to-throw-developer-error-matcher'
 ], function(
 	RectangularSensorVisualizer,
 	Cartesian3,

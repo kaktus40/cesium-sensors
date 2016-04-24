@@ -12,8 +12,8 @@ define([
 	'ConicSensorGraphics',
 	'Cesium/DataSources/ConstantProperty',
 	'Cesium/DataSources/EntityCollection',
-	'./Util/createScene',
-	'./Matchers/addToThrowDeveloperErrorMatcher'
+	'./util/create-scene',
+	'./matchers/add-to-throw-developer-error-matcher'
 ], function(
 	ConicSensorVisualizer,
 	Cartesian3,

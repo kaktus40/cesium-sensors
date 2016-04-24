@@ -8,10 +8,10 @@ define(function(require) {
 	var defined = require('Cesium/Core/defined');
 	var queryToObject = require('Cesium/Core/queryToObject');
 	var Scene = require('Cesium/Scene/Scene');
-	var createCanvas = require('./createCanvas');
-	var destroyCanvas = require('./destroyCanvas');
+	var createCanvas = require('./create-canvas');
+	var destroyCanvas = require('./destroy-canvas');
 
-	function createScene(options) {
+	return function createScene(options) {
 		options = defaultValue(options, {});
 
 		// save the canvas so we don't try to clone an HTMLCanvasElement
@@ -58,7 +58,5 @@ define(function(require) {
 		scene.rethrowRenderErrors = defaultValue(options.rethrowRenderErrors, true);
 
 		return scene;
-	}
-
-	return createScene;
+	};
 });

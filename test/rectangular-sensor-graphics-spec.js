@@ -4,7 +4,7 @@ define([
 	'Cesium/Core/Color',
 	'Cesium/DataSources/ColorMaterialProperty',
 	'Cesium/DataSources/ConstantProperty',
-	'./Matchers/addToThrowDeveloperErrorMatcher'
+	'./matchers/add-to-throw-developer-error-matcher'
 ], function(
 	RectangularSensorGraphics,
 	Color,
