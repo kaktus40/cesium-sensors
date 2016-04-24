@@ -1,54 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Use correct character set. -->
-  <meta charset="utf-8">
-  <!-- Tell IE to use the latest, best version (or Chrome Frame if pre-IE11). -->
-  <meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
-  <!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-  <title>Cesium Sensors Example</title>
+	<!-- Use correct character set. -->
+	<meta charset="utf-8">
+	<!-- Tell IE to use the latest, best version (or Chrome Frame if pre-IE11). -->
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+	<!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+	<title>Cesium Sensors Example</title>
 
-  <link rel="stylesheet" href="//cesiumjs.org/releases/1.15/Build/Cesium/Widgets/widgets.css" />
-  <script src="//cesiumjs.org/releases/1.15/Build/Cesium/Cesium.js"></script>
-  <script src="../Build/Unminified/CesiumSensors.js"></script>
+	<link rel="stylesheet" href="../node_modules/cesium/Build/Cesium/Widgets/widgets.css" />
+	<script src="../node_modules/cesium/Build/Cesium/Cesium.js"></script>
+	<script src="../dist/CesiumSensors.js"></script>
 
-  <style>
-      #cesiumContainer {
-          position: absolute;
-          top: 0;
-          left: 0;
-          height: 100%;
-          width: 100%;
-          margin: 0;
-          overflow: hidden;
-          padding: 0;
-          font-family: sans-serif;
-      }
+	<style>
+		#cesiumContainer {
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 100%;
+			width: 100%;
+			margin: 0;
+			overflow: hidden;
+			padding: 0;
+			font-family: sans-serif;
+		}
 
-      html {
-        height: 100%;
-      }
+		html {
+			height: 100%;
+		}
 
-      body {
-          padding: 0;
-          margin: 0;
-          overflow: hidden;
-          height: 100%;
-      }
-  </style>
+		body {
+			padding: 0;
+			margin: 0;
+			overflow: hidden;
+			height: 100%;
+		}
+	</style>
 </head>
 <body>
-  <div id="cesiumContainer"></div>
-  <script>
-    var viewer = new Cesium.Viewer('cesiumContainer');
-    viewer.extend(Cesium.viewerDragDropMixin);
+<div id="cesiumContainer"></div>
+<script>
+	var viewer = new Cesium.Viewer('cesiumContainer');
+	viewer.extend(Cesium.viewerDragDropMixin);
 
-    var czmlFile = 'LotsOfSensors.czml';
-    var dataSource = new Cesium.CzmlDataSource(czmlFile);
-    dataSource.load(czmlFile);
+	var czmlFile = 'LotsOfSensors.czml';
+	var dataSource = new Cesium.CzmlDataSource(czmlFile);
+	dataSource.load(czmlFile);
 
-    viewer.dataSources.add(dataSource);
-  </script>
+	viewer.dataSources.add(dataSource);
+</script>
 </body>
 </html>

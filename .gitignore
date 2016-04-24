@@ -1,6 +1,8 @@
 .idea
 *.iml
+.project
+.settings
 node_modules/
-Source/main.js
-Build/MinifiedShaders/
-ThirdParty/
+dist/
+.tmp/
+coverage/

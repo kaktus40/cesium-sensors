@@ -1,101 +1,111 @@
-/*global defineSuite*/
-defineSuite([
-        'CustomPatternSensorGraphics',
-        'Core/Color',
-        'DataSources/ColorMaterialProperty',
-        'DataSources/ConstantProperty'
-    ], function(
-        CustomPatternSensorGraphics,
-        Color,
-        ColorMaterialProperty,
-        ConstantProperty) {
-    "use strict";
-    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn,runs,waits,waitsFor*/
+/* eslint-disable max-nested-callbacks */
+define([
+	'CustomPatternSensorGraphics',
+	'Cesium/Core/Color',
+	'Cesium/DataSources/ColorMaterialProperty',
+	'Cesium/DataSources/ConstantProperty',
+	'./Matchers/addToThrowDeveloperErrorMatcher'
+], function(
+	CustomPatternSensorGraphics,
+	Color,
+	ColorMaterialProperty,
+	ConstantProperty,
+	addToThrowDeveloperErrorMatcher
+) {
+	'use strict';
 
-    it('merge assigns unassigned properties', function() {
-        var source = new CustomPatternSensorGraphics();
-        source.lateralSurfaceMaterial = new ColorMaterialProperty();
-        source.directions = new ConstantProperty([]);
-        source.intersectionColor = new ConstantProperty(Color.WHITE);
-        source.radius = new ConstantProperty(1);
-        source.show = new ConstantProperty(true);
-        source.showIntersection = new ConstantProperty(true);
-        source.intersectionWidth = new ConstantProperty(1);
+	/* global describe, it, beforeEach, expect */
 
-        var target = new CustomPatternSensorGraphics();
-        target.merge(source);
+	describe('custom pattern sensor graphics', function() {
+		describe('merge', function() {
+			beforeEach(addToThrowDeveloperErrorMatcher);
 
-        expect(target.lateralSurfaceMaterial).toBe(source.lateralSurfaceMaterial);
-        expect(target.directions).toBe(source.directions);
-        expect(target.intersectionColor).toBe(source.intersectionColor);
-        expect(target.radius).toBe(source.radius);
-        expect(target.show).toBe(source.show);
-        expect(target.showIntersection).toBe(source.showIntersection);
-        expect(target.intersectionWidth).toBe(source.intersectionWidth);
-    });
+			it('should assign unassigned properties', function() {
+				var source = new CustomPatternSensorGraphics();
+				source.lateralSurfaceMaterial = new ColorMaterialProperty();
+				source.directions = new ConstantProperty([]);
+				source.intersectionColor = new ConstantProperty(Color.WHITE);
+				source.radius = new ConstantProperty(1);
+				source.show = new ConstantProperty(true);
+				source.showIntersection = new ConstantProperty(true);
+				source.intersectionWidth = new ConstantProperty(1);
 
-    it('merge does not assign assigned properties', function() {
-        var source = new CustomPatternSensorGraphics();
-        source.lateralSurfaceMaterial = new ColorMaterialProperty();
-        source.directions = new ConstantProperty([]);
-        source.intersectionColor = new ConstantProperty(Color.WHITE);
-        source.radius = new ConstantProperty(1);
-        source.show = new ConstantProperty(true);
-        source.showIntersection = new ConstantProperty(true);
-        source.intersectionWidth = new ConstantProperty(1);
+				var target = new CustomPatternSensorGraphics();
+				target.merge(source);
 
-        var lateralSurfaceMaterial = new ColorMaterialProperty();
-        var directions = new ConstantProperty([]);
-        var intersectionColor = new ConstantProperty(Color.WHITE);
-        var radius = new ConstantProperty(1);
-        var show = new ConstantProperty(true);
-        var showIntersection = new ConstantProperty(true);
-        var intersectionWidth = new ConstantProperty(1);
+				expect(target.lateralSurfaceMaterial).toBe(source.lateralSurfaceMaterial);
+				expect(target.directions).toBe(source.directions);
+				expect(target.intersectionColor).toBe(source.intersectionColor);
+				expect(target.radius).toBe(source.radius);
+				expect(target.show).toBe(source.show);
+				expect(target.showIntersection).toBe(source.showIntersection);
+				expect(target.intersectionWidth).toBe(source.intersectionWidth);
+			});
 
-        var target = new CustomPatternSensorGraphics();
-        target.lateralSurfaceMaterial = lateralSurfaceMaterial;
-        target.directions = directions;
-        target.intersectionColor = intersectionColor;
-        target.radius = radius;
-        target.show = show;
-        target.showIntersection = showIntersection;
-        target.intersectionWidth = intersectionWidth;
+			it('should not assign assigned properties', function() {
+				var source = new CustomPatternSensorGraphics();
+				source.lateralSurfaceMaterial = new ColorMaterialProperty();
+				source.directions = new ConstantProperty([]);
+				source.intersectionColor = new ConstantProperty(Color.WHITE);
+				source.radius = new ConstantProperty(1);
+				source.show = new ConstantProperty(true);
+				source.showIntersection = new ConstantProperty(true);
+				source.intersectionWidth = new ConstantProperty(1);
 
-        target.merge(source);
+				var lateralSurfaceMaterial = new ColorMaterialProperty();
+				var directions = new ConstantProperty([]);
+				var intersectionColor = new ConstantProperty(Color.WHITE);
+				var radius = new ConstantProperty(1);
+				var show = new ConstantProperty(true);
+				var showIntersection = new ConstantProperty(true);
+				var intersectionWidth = new ConstantProperty(1);
 
-        expect(target.lateralSurfaceMaterial).toBe(lateralSurfaceMaterial);
-        expect(target.directions).toBe(directions);
-        expect(target.intersectionColor).toBe(intersectionColor);
-        expect(target.radius).toBe(radius);
-        expect(target.show).toBe(show);
-        expect(target.showIntersection).toBe(showIntersection);
-        expect(target.intersectionWidth).toBe(intersectionWidth);
-    });
+				var target = new CustomPatternSensorGraphics();
+				target.lateralSurfaceMaterial = lateralSurfaceMaterial;
+				target.directions = directions;
+				target.intersectionColor = intersectionColor;
+				target.radius = radius;
+				target.show = show;
+				target.showIntersection = showIntersection;
+				target.intersectionWidth = intersectionWidth;
 
-    it('clone works', function() {
-        var source = new CustomPatternSensorGraphics();
-        source.lateralSurfaceMaterial = new ColorMaterialProperty();
-        source.directions = new ConstantProperty([]);
-        source.intersectionColor = new ConstantProperty(Color.WHITE);
-        source.radius = new ConstantProperty(1);
-        source.show = new ConstantProperty(true);
-        source.showIntersection = new ConstantProperty(true);
-        source.intersectionWidth = new ConstantProperty(1);
+				target.merge(source);
 
-        var result = source.clone();
-        expect(result.lateralSurfaceMaterial).toBe(source.lateralSurfaceMaterial);
-        expect(result.directions).toBe(source.directions);
-        expect(result.intersectionColor).toBe(source.intersectionColor);
-        expect(result.radius).toBe(source.radius);
-        expect(result.show).toBe(source.show);
-        expect(result.showIntersection).toBe(source.showIntersection);
-        expect(result.intersectionWidth).toBe(source.intersectionWidth);
-    });
+				expect(target.lateralSurfaceMaterial).toBe(lateralSurfaceMaterial);
+				expect(target.directions).toBe(directions);
+				expect(target.intersectionColor).toBe(intersectionColor);
+				expect(target.radius).toBe(radius);
+				expect(target.show).toBe(show);
+				expect(target.showIntersection).toBe(showIntersection);
+				expect(target.intersectionWidth).toBe(intersectionWidth);
+			});
 
-    it('merge throws if source undefined', function() {
-        var target = new CustomPatternSensorGraphics();
-        expect(function() {
-            target.merge(undefined);
-        }).toThrowDeveloperError();
-    });
+			it('should throw if source undefined', function() {
+				var target = new CustomPatternSensorGraphics();
+				expect(function() {
+					target.merge(undefined);
+				}).toThrowDeveloperError();
+			});
+		});
+
+		it('should clone', function() {
+			var source = new CustomPatternSensorGraphics();
+			source.lateralSurfaceMaterial = new ColorMaterialProperty();
+			source.directions = new ConstantProperty([]);
+			source.intersectionColor = new ConstantProperty(Color.WHITE);
+			source.radius = new ConstantProperty(1);
+			source.show = new ConstantProperty(true);
+			source.showIntersection = new ConstantProperty(true);
+			source.intersectionWidth = new ConstantProperty(1);
+
+			var result = source.clone();
+			expect(result.lateralSurfaceMaterial).toBe(source.lateralSurfaceMaterial);
+			expect(result.directions).toBe(source.directions);
+			expect(result.intersectionColor).toBe(source.intersectionColor);
+			expect(result.radius).toBe(source.radius);
+			expect(result.show).toBe(source.show);
+			expect(result.showIntersection).toBe(source.showIntersection);
+			expect(result.intersectionWidth).toBe(source.intersectionWidth);
+		});
+	});
 });
