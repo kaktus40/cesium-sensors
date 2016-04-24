@@ -3,15 +3,24 @@
 
 var allTestFiles = [];
 var TEST_REGEXP = /^\/base\/test\/.*(spec)\.js$/;
+var WEBGL_REGEXP = /webgl/;
 
 function pathToModule(path) {
 	return path.replace(/^\/base\//, '').replace(/\.js$/, '');
 }
 
+var excludeWebGl = false;
+if (window.__karma__.config.args) {
+	excludeWebGl = window.__karma__.config.args[0];
+}
+
 Object.keys(window.__karma__.files).forEach(function(file) {
 	if (TEST_REGEXP.test(file)) {
-		// Normalize paths to RequireJS module names.
-		allTestFiles.push(pathToModule(file));
+		// exclude WebGL tests
+		if (!excludeWebGl || !WEBGL_REGEXP.test(file)) {
+			// Normalize paths to RequireJS module names.
+			allTestFiles.push(pathToModule(file));
+		}
 	}
 });
 

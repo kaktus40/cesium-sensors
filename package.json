@@ -41,7 +41,8 @@
   "scripts": {
     "build": "gulp build",
     "start": "gulp serve",
-    "test": "gulp test"
+    "test": "gulp test",
+    "ci": "gulp ci"
   },
   "xo": {
     "globals": [

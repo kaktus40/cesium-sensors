@@ -110,21 +110,32 @@ gulp.task('scripts', ['create-main-js', 'shaders'], function() {
 		.pipe(gulp.dest('dist'));
 });
 
-gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
+gulp.task('clean', del.bind(null, ['coverage', '.tmp', 'dist']));
 
 gulp.task('test-lint', function() {
 	return runLint(['test/**/*.js']);
 });
 
-gulp.task('test', ['test-lint'], function(done) {
+function test(done, excludeWebGl) {
 	var Server = require('karma').Server;
 
 	var server = new Server({
 		configFile: path.join(__dirname, '/test/karma.conf.js'),
-		singleRun: true
+		singleRun: true,
+		client: {
+			args: [Boolean(excludeWebGl)]
+		}
 	}, done);
 
 	server.start();
+}
+
+gulp.task('test', ['test-lint'], function(done) {
+	test(done);
+});
+
+gulp.task('test-no-webgl', ['test-lint'], function(done) {
+	test(done, true);
 });
 
 gulp.task('serve', function(done) {
@@ -151,7 +162,7 @@ gulp.task('build', ['lint', 'scripts'], function() {
 });
 
 gulp.task('ci', function(done) {
-	runSequence('lint', 'test', 'build', done);
+	runSequence('lint', 'test-no-webgl', 'build', done);
 });
 
 gulp.task('default', function(done) {
