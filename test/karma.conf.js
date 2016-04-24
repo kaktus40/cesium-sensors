@@ -13,19 +13,20 @@ module.exports = function(config) {
 		files: [
 			{ pattern: 'node_modules/cesium/Source/**/*', included: false },
 			{ pattern: 'node_modules/requirejs-text/*.js', included: false },
-			{ pattern: 'Source/**/*.js', included: false },
-			{ pattern: 'Source/**/*.glsl', included: false },
-			{ pattern: 'Specs/**/*.js', included: false },
-			'Specs/spec-main.js'
+			{ pattern: 'lib/**/*.js', included: false },
+			{ pattern: 'lib/**/*.glsl', included: false },
+			{ pattern: 'test/**/*.js', included: false },
+			'test/spec-main.js'
 		],
 
 		// list of files to exclude
 		exclude: [
-			'Source/initialize.js'
+			'lib/initialize.js',
+			'lib/main.js'
 		],
 
 		preprocessors: {
-			'Source/**/*.js': ['coverage']
+			'lib/**/*.js': ['coverage']
 		},
 
 		// test results reporter to use

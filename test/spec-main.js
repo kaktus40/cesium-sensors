@@ -2,7 +2,7 @@
 'use strict';
 
 var allTestFiles = [];
-var TEST_REGEXP = /^\/base\/Specs\/.*(Spec)\.js$/;
+var TEST_REGEXP = /^\/base\/test\/.*(Spec)\.js$/;
 
 function pathToModule(path) {
 	return path.replace(/^\/base\//, '').replace(/\.js$/, '');
@@ -17,14 +17,14 @@ Object.keys(window.__karma__.files).forEach(function(file) {
 
 require.config({
 	// Karma serves files under /base, which is the basePath from your config file
-	baseUrl: '/base/Source',
+	baseUrl: '/base/lib',
 
 	paths: {
 		Cesium: '../node_modules/cesium/Source',
 
 		text: '../node_modules/requirejs-text/text',
 
-		Specs: '../Specs'
+		test: '../test'
 	},
 
 	// dynamically load all test files

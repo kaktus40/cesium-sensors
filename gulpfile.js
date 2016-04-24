@@ -30,17 +30,17 @@ var runLint = function(src) {
 };
 
 gulp.task('lint', function() {
-	return runLint(['Source/**/*.js', 'gulpfile.js']);
+	return runLint(['lib/**/*.js', 'gulpfile.js']);
 });
 
 gulp.task('shaders', function() {
-	return gulp.src('Source/**/*.glsl')
+	return gulp.src('lib/**/*.glsl')
 		.pipe(processShaders())
 		.pipe(gulp.dest('.tmp/shaders'));
 });
 
 gulp.task('create-main-js', function() {
-	return gulp.src(['Source/**/*.js'])
+	return gulp.src(['lib/**/*.js'])
 		.pipe(gulpif('!main.js', generateShims()))
 		.pipe(order([
 			'!main.js',
@@ -51,7 +51,7 @@ gulp.task('create-main-js', function() {
 });
 
 function getCopyrightHeaders() {
-	var copyrightHeader = fs.readFileSync('Source/copyrightHeader.js').toString();
+	var copyrightHeader = fs.readFileSync('lib/copyrightHeader.js').toString();
 	var shaderCopyrightHeader = fs.readFileSync('.tmp/shaders/shaderCopyrightHeader.js').toString();
 
 	return copyrightHeader + '\n' + shaderCopyrightHeader;
@@ -82,7 +82,7 @@ gulp.task('scripts', ['create-main-js', 'shaders'], function() {
 
 		skipModuleInsertion: true,
 
-		baseUrl: 'Source',
+		baseUrl: 'lib',
 
 		include: '../.tmp/main',
 		paths: {
@@ -99,7 +99,7 @@ gulp.task('scripts', ['create-main-js', 'shaders'], function() {
 	});
 
 	// Use minified versions of shaders
-	globby.sync(['Source/**/*.glsl']).forEach(function(shader) {
+	globby.sync(['lib/**/*.glsl']).forEach(function(shader) {
 		shader = shader.replace(/\\/g, '/').replace(/\.glsl$/, '');
 		minifiedOptions.paths[shader] = path.join('.tmp/shaders', shader);
 	});
@@ -113,14 +113,14 @@ gulp.task('scripts', ['create-main-js', 'shaders'], function() {
 gulp.task('clean', del.bind(null, ['.tmp', 'dist']));
 
 gulp.task('test-lint', function() {
-	return runLint(['Specs/**/*.js']);
+	return runLint(['test/**/*.js']);
 });
 
 gulp.task('test', ['test-lint'], function(done) {
 	var Server = require('karma').Server;
 
 	var server = new Server({
-		configFile: path.join(__dirname, '/Specs/karma.conf.js'),
+		configFile: path.join(__dirname, '/test/karma.conf.js'),
 		singleRun: true
 	}, done);
 
@@ -138,9 +138,9 @@ gulp.task('run', function(done) {
 });
 
 gulp.task('watch', function() {
-	gulp.watch(['Examples/**/*.html', 'Examples/**/*.czml'], reload);
-	gulp.watch(['Source/**/*.glsl'], ['build-reload']);
-	gulp.watch(['Source/**/*.js'], ['build-reload']);
+	gulp.watch(['examples/**/*.html', 'examples/**/*.czml'], reload);
+	gulp.watch(['lib/**/*.glsl'], ['build-reload']);
+	gulp.watch(['lib/**/*.js'], ['build-reload']);
 });
 
 gulp.task('build-reload', ['build'], reload);
