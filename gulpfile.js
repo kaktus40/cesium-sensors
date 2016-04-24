@@ -89,12 +89,12 @@ gulp.task('scripts', ['create-main-js', 'shaders'], function() {
 	};
 
 	var unminified = optimize(assign({}, requirejsOptions, {
-		out: 'cesium-sensors.js',
+		out: 'cesium-sensor-volumes.js',
 		optimize: 'none'
 	}));
 
 	var minifiedOptions = assign({}, requirejsOptions, {
-		out: 'cesium-sensors.min.js',
+		out: 'cesium-sensor-volumes.min.js',
 		optimize: 'uglify2'
 	});
 

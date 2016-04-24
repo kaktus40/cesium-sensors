@@ -7,11 +7,11 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
 	<!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-	<title>Cesium Sensors Example</title>
+	<title>Cesium Sensor Volumes Example</title>
 
 	<link rel="stylesheet" href="../node_modules/cesium/Build/Cesium/Widgets/widgets.css" />
 	<script src="../node_modules/cesium/Build/Cesium/Cesium.js"></script>
-	<script src="../dist/cesium-sensors.js"></script>
+	<script src="../dist/cesium-sensor-volumes.js"></script>
 
 	<style>
 		#cesiumContainer {
@@ -72,7 +72,7 @@
 
 	function addRectangularSensor() {
 		viewer.scene.primitives.removeAll();
-		var rectangularPyramidSensor = new CesiumSensors.RectangularPyramidSensorVolume();
+		var rectangularPyramidSensor = new CesiumSensorVolumes.RectangularPyramidSensorVolume();
 
 		rectangularPyramidSensor.modelMatrix = getModelMatrix();
 		rectangularPyramidSensor.radius = 20000000.0;
@@ -86,7 +86,7 @@
 
 	function addCustomSensor() {
 		viewer.scene.primitives.removeAll();
-		var customSensor = new CesiumSensors.CustomSensorVolume();
+		var customSensor = new CesiumSensorVolumes.CustomSensorVolume();
 
 		var directions = [];
 		for (var i = 0; i < 8; ++i) {
