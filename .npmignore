@@ -1,0 +1,27 @@
+# IDE files
+.idea/
+*.iml
+.project
+.settings/
+
+# dependencies
+/node_modules/
+
+# output
+/.tmp/
+/coverage/
+
+# dev files
+/examples/
+/gulp/
+/test/
+
+/.editorconfig
+/.gitignore
+/.gitattributes
+/.travis.yml
+/gulpfile.js
+/index.html
+
+/lib/main.js
+/lib/copyright-header.js
