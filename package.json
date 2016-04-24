@@ -8,6 +8,9 @@
     "type": "git",
     "url": "https://github.com/jlouns/cesium-sensor-volumes.git"
   },
+  "keywords": [
+    "cesium"
+  ],
   "dependencies": {
     "cesium": "1.16.0",
     "requirejs": "2.1.22",
