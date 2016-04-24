@@ -31,7 +31,6 @@
     "gulp-order": "^1.1.1",
     "gulp-requirejs-optimize": "^1.0.0",
     "gulp-size": "^2.0.0",
-    "gulp-uglify": "^1.5.1",
     "gulp-util": "^3.0.7",
     "gulp-xo": "^0.10.0",
     "lodash.assign": "^4.0.8",

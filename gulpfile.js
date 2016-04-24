@@ -17,7 +17,6 @@ var order = require('gulp-order');
 var requirejsOptimize = require('gulp-requirejs-optimize');
 var runSequence = require('run-sequence');
 var size = require('gulp-size');
-var uglify = require('gulp-uglify');
 var xo = require('gulp-xo');
 var reload = browserSync.reload;
 
@@ -75,7 +74,6 @@ gulp.task('scripts', ['create-main-js', 'shaders'], function() {
 		},
 
 		useStrict: true,
-		optimize: 'none',
 
 		inlineText: true,
 		stubModules: ['text'],
@@ -91,11 +89,13 @@ gulp.task('scripts', ['create-main-js', 'shaders'], function() {
 	};
 
 	var unminified = optimize(assign({}, requirejsOptions, {
-		out: 'CesiumSensors.js'
+		out: 'CesiumSensors.js',
+		optimize: 'none'
 	}));
 
 	var minifiedOptions = assign({}, requirejsOptions, {
-		out: 'CesiumSensors.min.js'
+		out: 'CesiumSensors.min.js',
+		optimize: 'uglify2'
 	});
 
 	// Use minified versions of shaders
@@ -104,7 +104,7 @@ gulp.task('scripts', ['create-main-js', 'shaders'], function() {
 		minifiedOptions.paths[shader] = path.join('../.tmp/shaders', shader);
 	});
 
-	var minified = optimize(minifiedOptions).pipe(uglify());
+	var minified = optimize(minifiedOptions);
 
 	return es.merge(unminified, minified)
 		.pipe(gulp.dest('dist'));
