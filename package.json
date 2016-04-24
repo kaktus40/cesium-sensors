@@ -12,8 +12,8 @@
     "cesium"
   ],
   "dependencies": {
-    "cesium": "1.19.0",
-    "requirejs": "2.1.22",
+    "cesium": "1.20.0",
+    "requirejs": "2.2.0",
     "requirejs-text": "^2.0.12"
   },
   "devDependencies": {
