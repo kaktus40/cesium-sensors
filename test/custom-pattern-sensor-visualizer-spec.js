@@ -1,6 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 define([
-	'CustomPatternSensorVisualizer',
+	'custom-pattern-sensor-graphics',
+	'custom-pattern-sensor-visualizer',
 	'Cesium/Core/Cartesian3',
 	'Cesium/Core/Color',
 	'Cesium/Core/JulianDate',
@@ -11,11 +12,11 @@ define([
 	'Cesium/Core/Spherical',
 	'Cesium/DataSources/ColorMaterialProperty',
 	'Cesium/DataSources/ConstantProperty',
-	'CustomPatternSensorGraphics',
 	'Cesium/DataSources/EntityCollection',
 	'./util/create-scene',
 	'./matchers/add-to-throw-developer-error-matcher'
 ], function(
+	CustomPatternSensorGraphics,
 	CustomPatternSensorVisualizer,
 	Cartesian3,
 	Color,
@@ -27,7 +28,6 @@ define([
 	Spherical,
 	ColorMaterialProperty,
 	ConstantProperty,
-	CustomPatternSensorGraphics,
 	EntityCollection,
 	createScene,
 	addToThrowDeveloperErrorMatcher

@@ -1,6 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 define([
-	'ConicSensorVisualizer',
+	'conic-sensor-graphics',
+	'conic-sensor-visualizer',
 	'Cesium/Core/Cartesian3',
 	'Cesium/Core/Color',
 	'Cesium/Core/JulianDate',
@@ -9,12 +10,12 @@ define([
 	'Cesium/Core/Matrix4',
 	'Cesium/Core/Quaternion',
 	'Cesium/DataSources/ColorMaterialProperty',
-	'ConicSensorGraphics',
 	'Cesium/DataSources/ConstantProperty',
 	'Cesium/DataSources/EntityCollection',
 	'./util/create-scene',
 	'./matchers/add-to-throw-developer-error-matcher'
 ], function(
+	ConicSensorGraphics,
 	ConicSensorVisualizer,
 	Cartesian3,
 	Color,
@@ -24,7 +25,6 @@ define([
 	Matrix4,
 	Quaternion,
 	ColorMaterialProperty,
-	ConicSensorGraphics,
 	ConstantProperty,
 	EntityCollection,
 	createScene,

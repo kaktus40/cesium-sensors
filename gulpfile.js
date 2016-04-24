@@ -50,8 +50,8 @@ gulp.task('create-main-js', function() {
 });
 
 function getCopyrightHeaders() {
-	var copyrightHeader = fs.readFileSync('lib/copyrightHeader.js').toString();
-	var shaderCopyrightHeader = fs.readFileSync('.tmp/shaders/shaderCopyrightHeader.js').toString();
+	var copyrightHeader = fs.readFileSync('lib/copyright-header.js').toString();
+	var shaderCopyrightHeader = fs.readFileSync('.tmp/shaders/shader-copyright-header.js').toString();
 
 	return copyrightHeader + '\n' + shaderCopyrightHeader;
 }
@@ -89,12 +89,12 @@ gulp.task('scripts', ['create-main-js', 'shaders'], function() {
 	};
 
 	var unminified = optimize(assign({}, requirejsOptions, {
-		out: 'CesiumSensors.js',
+		out: 'cesium-sensors.js',
 		optimize: 'none'
 	}));
 
 	var minifiedOptions = assign({}, requirejsOptions, {
-		out: 'CesiumSensors.min.js',
+		out: 'cesium-sensors.min.js',
 		optimize: 'uglify2'
 	});
 

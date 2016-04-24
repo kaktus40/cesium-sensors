@@ -39,6 +39,7 @@
     "through2": "^2.0.1"
   },
   "scripts": {
+    "build": "gulp build",
     "start": "gulp serve",
     "test": "gulp test"
   },

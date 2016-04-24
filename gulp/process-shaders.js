@@ -60,7 +60,7 @@ module.exports = function() {
 		}));
 	}, function(cb) {
 		this.push(new gutil.File({
-			path: 'shaderCopyrightHeader.js',
+			path: 'shader-copyright-header.js',
 			contents: new Buffer(shaderLicenseComments.join('\n'))
 		}));
 		cb();

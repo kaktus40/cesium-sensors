@@ -1,6 +1,6 @@
 /* eslint-disable max-nested-callbacks */
 define([
-	'RectangularSensorGraphics',
+	'rectangular-sensor-graphics',
 	'Cesium/Core/Color',
 	'Cesium/DataSources/ColorMaterialProperty',
 	'Cesium/DataSources/ConstantProperty',

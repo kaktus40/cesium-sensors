@@ -1,6 +1,7 @@
 /* eslint-disable max-nested-callbacks */
 define([
-	'RectangularSensorVisualizer',
+	'rectangular-sensor-graphics',
+	'rectangular-sensor-visualizer',
 	'Cesium/Core/Cartesian3',
 	'Cesium/Core/Color',
 	'Cesium/Core/JulianDate',
@@ -12,10 +13,10 @@ define([
 	'Cesium/DataSources/ColorMaterialProperty',
 	'Cesium/DataSources/ConstantProperty',
 	'Cesium/DataSources/EntityCollection',
-	'RectangularSensorGraphics',
 	'./util/create-scene',
 	'./matchers/add-to-throw-developer-error-matcher'
 ], function(
+	RectangularSensorGraphics,
 	RectangularSensorVisualizer,
 	Cartesian3,
 	Color,
@@ -28,7 +29,6 @@ define([
 	ColorMaterialProperty,
 	ConstantProperty,
 	EntityCollection,
-	RectangularSensorGraphics,
 	createScene,
 	addToThrowDeveloperErrorMatcher
 ) {
