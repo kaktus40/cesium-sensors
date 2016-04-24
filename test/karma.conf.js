@@ -4,7 +4,7 @@ module.exports = function(config) {
 
 	var browsers = ['Chrome'];
 	if (process.env.TRAVIS) {
-		browsers = ['Chrome_travis_ci'];
+		browsers = ['Chrome_no_sandbox'];
 	}
 
 	config.set({
@@ -58,9 +58,10 @@ module.exports = function(config) {
 		// enable / disable watching file and executing tests whenever any file changes
 		autoWatch: true,
 
-		// custom chrome launch for use on Travis CI
+		// custom chrome launcher for use on Travis CI
 		customLaunchers: {
-			Chrome_travis_ci: {
+			// eslint-disable-next-line camelcase
+			Chrome_no_sandbox: {
 				base: 'Chrome',
 				flags: ['--no-sandbox']
 			}
