@@ -1,5 +1,7 @@
 # [cesium](https://cesiumjs.org)-sensor-volumes
 [![Build Status](https://travis-ci.org/jlouns/cesium-sensor-volumes.svg?branch=master)](https://travis-ci.org/jlouns/cesium-sensor-volumes)&nbsp;
+[![npm version](https://badge.fury.io/js/cesium-sensor-volumes.svg)](https://badge.fury.io/js/cesium-sensor-volumes)
+[![Dependency Status](https://david-dm.org/jlouns/cesium-sensor-volumes.svg)](https://david-dm.org/jlouns/cesium-sensor-volumes)
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
 
 A Cesium plugin for visualizing sensor volumes. Based on [cesium-sensors](https://github.com/AnalyticalGraphicsInc/cesium-sensors) and evolved to support more recent Cesium versions.
