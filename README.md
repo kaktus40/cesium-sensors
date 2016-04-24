@@ -4,6 +4,9 @@
 </a>
 </p>
 
+[![Build Status](https://travis-ci.org/jlouns/cesium-sensors.svg?branch=master)](https://travis-ci.org/jlouns/cesium-sensors)&nbsp;
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0.html)
+
 **cesium-sensors**: A Cesium plugin for visualizing sensor volumes.
 
 **Cesium version**: Tested against [1.16](https://cesiumjs.org/downloads.html).
