@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<!-- Use correct character set. -->
+	<meta charset="utf-8">
+	<!-- Tell IE to use the latest, best version (or Chrome Frame if pre-IE11). -->
+	<meta http-equiv="X-UA-Compatible" content="IE=Edge,chrome=1">
+	<!-- Make the application on mobile take up the full browser screen and disable user scaling. -->
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+	<title>Cesium Sensor Volumes Example</title>
+
+	<link rel="stylesheet" href="../node_modules/cesium/Build/Cesium/Widgets/widgets.css" />
+	<script src="../node_modules/cesium/Build/Cesium/Cesium.js"></script>
+	<script src="../dist/cesium-sensor-volumes.js"></script>
+
+	<style>
+		#cesiumContainer {
+			position: absolute;
+			top: 0;
+			left: 0;
+			height: 80%;
+			width: 100%;
+			margin: 0;
+			overflow: hidden;
+			padding: 0;
+		}
+
+		html {
+			height: 100%;
+		}
+
+		body {
+			padding: 0;
+			margin: 0;
+			overflow: hidden;
+			height: 100%;
+			background-color: black;
+			color:white;
+			font-family: sans-serif;
+		}
+
+		.main-flex-container{
+			display: flex;
+			justify-content: space-between;
+			flex-wrap: wrap;
+		}
+
+		.sec-flex-container{
+			display: flex;
+			flex-direction: column;
+		}
+
+		.title{
+			border:solid;
+			text-align: center;
+			display: block;
+		}
+
+		#toolbar {
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			height: 20%;
+			width: 100%;
+			margin: 0;
+			overflow:auto;  
+			padding: 0;
+		}
+
+		#toolbar>div{
+			margin-left: 30px;
+		}
+
+		table {
+			width: 80%;
+		}
+		tbody{
+		}
+		th, td {
+			padding: 7px;
+			text-align: left;
+		}
+
+		td>img {
+			max-width: 30px;
+			max-height: 30px;
+		}
+
+		fieldset
+		{
+			border:2px solid green;	
+			border-radius:8px;	
+		}
+	</style>
+</head>
+<body>
+	<div id="cesiumContainer"></div>
+	<div id="toolbar">
+		<div class="main-flex-container">
+			<fieldset>
+				<legend>summit</legend>
+				<div class="main-flex-container"> 
+					<div class="sec-flex-container">
+						<label for="latOrigine">lat (in °):</label>
+						<input type="number" value="30" min="-90" max="90" step="0.1" id="latOrigine" name="latOrigine" />
+					</div>
+					<div class="sec-flex-container">
+						<label for="longOrigine">long (in °):</label>
+						<input type="number" value="-90" min="-180" max="180" step="0.1" id="longOrigine" name="longOrigine" />
+					</div>
+					<div class="sec-flex-container">
+						<label for="hauteurOrigine">alt (in m):</label>
+						<input type="number" value="3000000" min="0" max="10000000" step="100" id="hauteurOrigine" name="hauteurOrigine"/>
+					</div>
+				</div>
+			</fieldset>
+			<fieldset title="local referential. first axis:North, second axis:East, third axis: Earth center">
+				<legend>sensor orientation</legend>
+				<div class="main-flex-container"> 
+					<div class="sec-flex-container">
+						<label for="heading">heading (in °):</label>
+						<input type="number" value="0" min="0" max="359.9" step="0.1" id="heading" name="heading" />
+					</div>
+					<div class="sec-flex-container">
+						<label for="pitch">pitch (in °):</label>
+						<input type="number" value="0" min="-90" max="90" step="0.1" id="pitch" name="pitch" />
+					</div>
+					<div class="sec-flex-container">
+						<label for="roll">roll (in °):</label>
+						<input type="number" value="0" min="-90" max="90" step="0.1" id="roll" name="roll" />
+					</div>
+				</div>
+			</fieldset>
+			<fieldset>
+				<legend>others properties</legend>
+				<div class="main-flex-container"> 
+					<div class="sec-flex-container">
+						<label for="couleurLat" style="margin-left: 30px;">lateral color:</label>
+						<div>
+							<input type="color" value="#000" id="couleurLat" name="couleurLat"/>
+							<input type="number" value="1" min="0" max="1" step="0.01" id="alphaLat" name="alphaLat" />
+						</div>
+					</div>
+					<div class="sec-flex-container">
+						<label for="couleurInter" style="margin-left: 10px;">intersection color:</label>
+						<div>
+							<input type="color" value="#000" id="couleurInter" name="couleurInter"/>
+							<input type="number" value="1" min="0" max="1" step="0.01" id="alphaInter" name="alphaInter"  />
+						</div>
+					</div>
+					<div class="sec-flex-container">
+						<label for="rayon" style="margin-left: 10px;">ray (in m):</label>
+						<input type="number" value="10000000" min="1" max="100000000" step="10" id="rayon" name="rayon"/>
+					</div>
+					<div class="sec-flex-container">
+						<label for="epaisseur" style="margin-left: 10px;">intersection width: </label>
+						<input type="number" value="1" min="1" max="15" step="1" id="epaisseur" name="epaisseur" />
+					</div>
+				</div>
+			</fieldset>
+		</div>
+		
+		<div>
+			<table id="table">
+				<thead>
+					<tr>
+						<td>azimut in (°)</td>
+						<td>elevation in (°)</td>
+						<td>action</td>
+					</tr>
+				</thead>
+				<tbody>
+
+				</tbody>
+				<tfoot>
+					<tr>
+						<td><input type="number" value="0" min="0" max="359.9" step="1" id="azimut"/> </td>
+						<td><input type="number" value="0" min="-90" max="90" step="1" id="elevation"/> </td>
+						<td><image  src="images/add.png"/></td>
+					</tr>
+				</tfoot>
+			</table>
+		</div>
+	</div>
+	<script>
+		var scratchHPRQuaternion = new Cesium.Quaternion();
+		var scratchScale = new Cesium.Cartesian3(1.0, 1.0, 1.0);
+		var scratchHPRMatrix4 = new Cesium.Matrix4();
+		var colorLat=new Cesium.Color();
+		var ccolorInter=new Cesium.Color();
+
+
+		headingPitchRollToFixedFrame = function(origin, heading, pitch, roll, ellipsoid, result) {
+			var hprQuaternion = Cesium.Quaternion.fromHeadingPitchRoll(heading, pitch, roll, scratchHPRQuaternion);
+			var hprMatrix = Cesium.Matrix4.fromTranslationQuaternionRotationScale(Cesium.Cartesian3.ZERO, hprQuaternion, scratchScale, scratchHPRMatrix4);
+			result = Cesium.Transforms.northEastDownToFixedFrame(origin, ellipsoid, result);
+			return Cesium.Matrix4.multiply(result, hprMatrix, result);
+		};
+
+		var viewer = new Cesium.Viewer('cesiumContainer', {
+			sceneModePicker : false
+		});
+		var customSensor = new CesiumSensorVolumes.CustomSensorVolume();
+		viewer.scene.primitives.add(customSensor);
+		var listDirections=[];
+		for (var i = 0; i < 3; ++i) {
+			var clock = Cesium.Math.toRadians(120.0 * i);
+			var cone = Cesium.Math.toRadians(25.0);
+			listDirections.push(new Cesium.Spherical(clock, cone));
+		}
+
+		function getValueNumber(id){
+			var element=document.getElementById(id);
+			var value= parseFloat(element.value);
+			var min =parseFloat(element.min);
+			var max =parseFloat(element.max);
+			if(isNaN(value)){
+				value=0;
+			}
+			if(value<min){
+				value=min;
+			}
+			if(value>max){
+				value=max;
+			}
+			return value;
+		}
+
+		function getValue(id){
+			return document.getElementById(id).value;
+		}
+
+		function hexToRgb(hex) {
+			var result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+			return result ? {
+				r: parseInt(result[1], 16),
+				g: parseInt(result[2], 16),
+				b: parseInt(result[3], 16)
+			} : {
+				r: 0,
+				g: 0,
+				b: 0
+			}
+		}
+
+		function getalphaColor(idRGB,idAlpha,result){
+			var rgb=hexToRgb(getValue(idRGB));
+			var alpha=getValueNumber(idAlpha)
+			Cesium.Color.fromCssColorString("rgba("+rgb.r+","+rgb.g+","+rgb.b+","+alpha+")",result);
+		}
+
+		function updateViewer(){
+			var origineLat=getValueNumber("latOrigine");
+			var origineLong=getValueNumber("longOrigine");
+			var origineHauteur=getValueNumber("hauteurOrigine");
+			var origine=Cesium.Cartesian3.fromDegrees(origineLong, origineLat, origineHauteur);
+
+			var heading=Cesium.Math.toRadians(getValueNumber("heading"));
+			var pitch=Cesium.Math.toRadians(getValueNumber("pitch"));
+			var roll=Cesium.Math.toRadians(getValueNumber("roll"));
+
+			var modelMatrix=headingPitchRollToFixedFrame(origine,heading,pitch,roll);
+			customSensor.modelMatrix = modelMatrix;
+			customSensor.radius=getValueNumber("rayon");
+			customSensor.intersectionWidth=getValueNumber("epaisseur");
+
+			getalphaColor('couleurLat','alphaLat',colorLat);
+			getalphaColor('couleurInter','alphaInter',ccolorInter);
+
+			customSensor.lateralSurfaceMaterial= Cesium.Material.fromType('Color', {
+				color:colorLat
+			});
+			customSensor.intersectionColor=ccolorInter;
+			customSensor.directions = listDirections;
+		}
+
+		function updateTable(){
+			var tBody=document.querySelector('#table>tbody');
+			var content='';
+			listDirections.forEach(function(spherical,index){
+				var elevation=Cesium.Math.toDegrees(spherical.cone).toFixed(1);
+				var azimut=Cesium.Math.toDegrees(spherical.clock).toFixed(1);
+				content+='<tr><td>'+azimut+'</td><td>'+elevation+'</td><td><image  src="images/delete.png" data-id="'+index+'"/></td></tr>';
+			});
+			tBody.innerHTML=content;
+		}
+
+		function addSpherical(){
+			var clock=Cesium.Math.toRadians(getValueNumber("azimut"));
+			var cone=Cesium.Math.toRadians(getValueNumber("elevation"));
+			listDirections.push(new Cesium.Spherical(clock, cone));
+			updateTable();
+			updateViewer();
+		}
+
+		function removeSpherical(index){
+			listDirections.splice(index,1);
+			updateTable();
+			updateViewer();
+		}
+
+		document.getElementById('table').addEventListener('click',function(evt){
+			var element = evt.target;
+			if (element.tagName.toLowerCase() === 'img') {
+				var identification = parseInt(element.getAttribute("data-id"), 10);
+				if(isNaN(identification)){
+					addSpherical();
+				}
+				else{
+					removeSpherical(identification);
+				}
+			}
+		});
+
+		var listInput=document.querySelectorAll("div>input");
+		for(var i=0;i<listInput.length;i++){
+			listInput[i].addEventListener('input',function(){
+				updateViewer();
+			});
+		}
+		updateTable();
+		updateViewer();
+	</script>
+</body>
+</html>
