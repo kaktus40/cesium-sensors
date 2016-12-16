@@ -12,7 +12,7 @@
     "cesium"
   ],
   "dependencies": {
-    "cesium": "1.26.0",
+    "cesium": "1.27.0",
     "requirejs": "2.3.2",
     "requirejs-text": "^2.0.12"
   },
