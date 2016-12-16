@@ -41,4 +41,4 @@ define([
 			dataSourceCollection.add(new CzmlDataSource());
 		});
 	});
-});
+}, 'WebGL');
