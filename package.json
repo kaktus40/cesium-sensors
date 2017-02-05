@@ -1,6 +1,6 @@
 {
   "name": "cesium-sensor-volumes",
-  "version": "1.20.0",
+  "version": "1.30.0",
   "description": "A Cesium plugin for visualizing sensor volumes.",
   "homepage": "https://cesiumjs.org",
   "license": "Apache-2.0",
@@ -12,36 +12,36 @@
     "cesium"
   ],
   "dependencies": {
-    "cesium": "1.20.0",
-    "requirejs": "2.2.0",
-    "requirejs-text": "^2.0.12"
+    "cesium": "1.30.0",
+    "requirejs": "2.3.2",
+    "requirejs-text": "^2.0.15"
   },
   "devDependencies": {
-    "almond": "^0.3.2",
-    "browser-sync": "^2.8.2",
-    "del": "^2.1.0",
-    "electron-prebuilt": "^0.37.7",
-    "event-stream": "^3.3.2",
-    "globby": "^4.0.0",
+    "almond": "^0.3.3",
+    "browser-sync": "^2.18.7",
+    "del": "^2.2.2",
+    "electron": "1.4.15",
+    "event-stream": "^3.3.4",
+    "globby": "^6.1.0",
     "gulp": "^3.9.0",
-    "gulp-concat": "^2.6.0",
-    "gulp-if": "^2.0.0",
+    "gulp-concat": "^2.6.1",
+    "gulp-if": "^2.0.2",
     "gulp-order": "^1.1.1",
-    "gulp-requirejs-optimize": "^1.0.0",
+    "gulp-requirejs-optimize": "^1.2.0",
     "gulp-size": "^2.0.0",
-    "gulp-util": "^3.0.7",
-    "gulp-xo": "^0.10.0",
-    "jasmine-core": "^2.4.1",
-    "karma": "^0.13.8",
-    "karma-chrome-launcher": "^0.2.0",
-    "karma-coverage": "^0.5.0",
+    "gulp-util": "^3.0.8",
+    "gulp-xo": "^0.14.0",
+    "jasmine-core": "^2.5.2",
+    "karma": "^1.4.1",
+    "karma-chrome-launcher": "^2.0.0",
+    "karma-coverage": "^1.1.1",
     "karma-electron-launcher": "^0.1.0",
-    "karma-jasmine": "^0.3.6",
-    "karma-requirejs": "^0.2.2",
-    "lodash.assign": "^4.0.8",
-    "merge-stream": "^1.0.0",
-    "run-sequence": "^1.1.5",
-    "through2": "^2.0.1"
+    "karma-jasmine": "^1.1.0",
+    "karma-requirejs": "^1.1.0",
+    "lodash.assign": "^4.2.0",
+    "merge-stream": "^1.0.1",
+    "run-sequence": "^1.2.2",
+    "through2": "^2.0.3"
   },
   "scripts": {
     "build": "gulp build",
@@ -54,17 +54,22 @@
       "define"
     ],
     "rules": {
-      "space-before-function-paren": [
-        "error",
-        "never"
-      ],
-      "babel/object-curly-spacing": [
+      "func-names": "off",
+      "import/no-amd": "off",
+      "import/no-extraneous-dependencies": "off",
+      "import/no-unresolved": "off",
+      "import/no-webpack-loader-syntax": "off",
+      "object-curly-spacing": [
         "error",
         "always",
         {
           "objectsInObjects": false,
           "arraysInObjects": false
         }
+      ],
+      "space-before-function-paren": [
+        "error",
+        "never"
       ]
     }
   }
