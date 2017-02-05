@@ -14,7 +14,7 @@ module.exports = function(PLUGIN_NAME, transform, flush) {
 			cb(new gutil.PluginError(PLUGIN_NAME, 'Streaming not supported'));
 			return;
 		}
-		
+
 		transform(file, enc, cb);
 	}, flush);
 };

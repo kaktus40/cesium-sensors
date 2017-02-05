@@ -18,6 +18,7 @@ var requirejsOptimize = require('gulp-requirejs-optimize');
 var runSequence = require('run-sequence');
 var size = require('gulp-size');
 var xo = require('gulp-xo');
+
 var reload = browserSync.reload;
 
 var generateShims = require('./gulp/generate-shims');
@@ -29,7 +30,7 @@ var runLint = function(src) {
 };
 
 gulp.task('lint', function() {
-	return runLint(['lib/**/*.js', 'gulpfile.js']);
+	return runLint(['lib/**/*.js', 'gulp/**/*.js', 'gulpfile.js']);
 });
 
 gulp.task('shaders', function() {

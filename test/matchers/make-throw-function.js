@@ -16,8 +16,8 @@ define(function() {
 
 						try {
 							actual();
-						} catch (e) {
-							exception = e;
+						} catch (err) {
+							exception = err;
 						}
 
 						if (exception) {

@@ -7,12 +7,12 @@ var PLUGIN_NAME = 'cesium-sensors-process-shaders';
 
 module.exports = function() {
 	var shaderLicenseComments = [];
-	
+
 	return pluginStream(PLUGIN_NAME, function(file, enc, cb) {
-		
 		var contents = file.contents.toString();
 		contents = contents.replace(/\r\n/gm, '\n');
 
+		// eslint-disable-next-line no-useless-escape
 		var licenseComments = contents.match(/\/\*\*(?:[^*\/]|\*(?!\/)|\n)*?@license(?:.|\n)*?\*\//gm);
 		if (licenseComments !== null) {
 			shaderLicenseComments = shaderLicenseComments.concat(licenseComments);
