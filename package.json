@@ -1,6 +1,6 @@
 {
   "name": "cesium-sensor-volumes",
-  "version": "1.30.0",
+  "version": "1.31.0",
   "description": "A Cesium plugin for visualizing sensor volumes.",
   "homepage": "https://cesiumjs.org",
   "license": "Apache-2.0",
