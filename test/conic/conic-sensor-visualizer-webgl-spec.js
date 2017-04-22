@@ -99,9 +99,10 @@ define([
 			var testObject = entityCollection.getOrCreateEntity('test');
 			testObject.addProperty('conicSensor');
 			testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-			var conicSensor = testObject.conicSensor = new ConicSensorGraphics();
+			var conicSensor = new ConicSensorGraphics();
 			conicSensor.maximumClockAngle = new ConstantProperty(1);
 			conicSensor.outerHalfAngle = new ConstantProperty(1);
+			testObject.conicSensor = conicSensor;
 			visualizer.update(JulianDate.now());
 			expect(scene.primitives.length).toEqual(0);
 		});
@@ -113,9 +114,10 @@ define([
 			var testObject = entityCollection.getOrCreateEntity('test');
 			testObject.addProperty('conicSensor');
 			testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
-			var conicSensor = testObject.conicSensor = new ConicSensorGraphics();
+			var conicSensor = new ConicSensorGraphics();
 			conicSensor.maximumClockAngle = new ConstantProperty(1);
 			conicSensor.outerHalfAngle = new ConstantProperty(1);
+			testObject.conicSensor = conicSensor;
 			visualizer.update(JulianDate.now());
 			expect(scene.primitives.length).toEqual(0);
 		});
@@ -131,7 +133,7 @@ define([
 			testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
 			testObject.orientation = new ConstantProperty(new Quaternion(0, 0, Math.sin(CesiumMath.PI_OVER_FOUR), Math.cos(CesiumMath.PI_OVER_FOUR)));
 
-			var conicSensor = testObject.conicSensor = new ConicSensorGraphics();
+			var conicSensor = new ConicSensorGraphics();
 			conicSensor.minimumClockAngle = new ConstantProperty(0.1);
 			conicSensor.maximumClockAngle = new ConstantProperty(0.2);
 			conicSensor.innerHalfAngle = new ConstantProperty(0.3);
@@ -142,6 +144,8 @@ define([
 			conicSensor.radius = new ConstantProperty(123.5);
 			conicSensor.show = new ConstantProperty(true);
 			conicSensor.lateralSurfaceMaterial = new ColorMaterialProperty(Color.WHITE);
+
+			testObject.conicSensor = conicSensor;
 
 			visualizer.update(time);
 			expect(scene.primitives.length).toEqual(1);
@@ -184,11 +188,13 @@ define([
 			testObject2.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
 			testObject2.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
 
-			var conicSensor = testObject.conicSensor = new ConicSensorGraphics();
+			var conicSensor = new ConicSensorGraphics();
 			conicSensor.intersectionColor = new ConstantProperty(new Color(0.1, 0.2, 0.3, 0.4));
+			testObject.conicSensor = conicSensor;
 
-			var conicSensor2 = testObject2.conicSensor = new ConicSensorGraphics();
+			var conicSensor2 = new ConicSensorGraphics();
 			conicSensor2.intersectionColor = new ConstantProperty(new Color(0.4, 0.3, 0.2, 0.1));
+			testObject2.conicSensor = conicSensor2;
 
 			visualizer.update(time);
 
@@ -228,9 +234,10 @@ define([
 			testObject.addProperty('conicSensor');
 			testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
 			testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-			var conicSensor = testObject.conicSensor = new ConicSensorGraphics();
+			var conicSensor = new ConicSensorGraphics();
 			conicSensor.maximumClockAngle = new ConstantProperty(1);
 			conicSensor.outerHalfAngle = new ConstantProperty(1);
+			testObject.conicSensor = conicSensor;
 
 			var time = JulianDate.now();
 			expect(scene.primitives.length).toEqual(0);
@@ -250,9 +257,10 @@ define([
 			testObject.addProperty('conicSensor');
 			testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
 			testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-			var conicSensor = testObject.conicSensor = new ConicSensorGraphics();
+			var conicSensor = new ConicSensorGraphics();
 			conicSensor.maximumClockAngle = new ConstantProperty(1);
 			conicSensor.outerHalfAngle = new ConstantProperty(1);
+			testObject.conicSensor = conicSensor;
 
 			var time = JulianDate.now();
 			visualizer.update(time);

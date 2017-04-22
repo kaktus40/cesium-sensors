@@ -56,12 +56,12 @@ module.exports = function() {
 
 		cb(null, new gutil.File({
 			path: file.relative,
-			contents: new Buffer(newContents)
+			contents: Buffer.from(newContents)
 		}));
 	}, function(cb) {
 		this.push(new gutil.File({
 			path: 'shader-copyright-header.js',
-			contents: new Buffer(shaderLicenseComments.join('\n'))
+			contents: Buffer.from(shaderLicenseComments.join('\n'))
 		}));
 		cb();
 	});
