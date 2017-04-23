@@ -101,9 +101,10 @@ define([
 			var testObject = entityCollection.getOrCreateEntity('test');
 			testObject.addProperty('rectangularSensor');
 			testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-			var rectangularSensor = testObject.rectangularSensor = new RectangularSensorGraphics();
+			var rectangularSensor = new RectangularSensorGraphics();
 			rectangularSensor.xHalfAngle = new ConstantProperty(0.1);
 			rectangularSensor.yHalfAngle = new ConstantProperty(0.2);
+			testObject.rectangularSensor = rectangularSensor;
 			visualizer.update(JulianDate.now());
 			expect(scene.primitives.length).toEqual(0);
 		});
@@ -115,9 +116,10 @@ define([
 			var testObject = entityCollection.getOrCreateEntity('test');
 			testObject.addProperty('rectangularSensor');
 			testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
-			var rectangularSensor = testObject.rectangularSensor = new RectangularSensorGraphics();
+			var rectangularSensor = new RectangularSensorGraphics();
 			rectangularSensor.xHalfAngle = new ConstantProperty(0.1);
 			rectangularSensor.yHalfAngle = new ConstantProperty(0.2);
+			testObject.rectangularSensor = rectangularSensor;
 			visualizer.update(JulianDate.now());
 			expect(scene.primitives.length).toEqual(0);
 		});
@@ -133,7 +135,7 @@ define([
 			testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
 			testObject.orientation = new ConstantProperty(new Quaternion(0, 0, Math.sin(CesiumMath.PI_OVER_FOUR), Math.cos(CesiumMath.PI_OVER_FOUR)));
 
-			var rectangularSensor = testObject.rectangularSensor = new RectangularSensorGraphics();
+			var rectangularSensor = new RectangularSensorGraphics();
 			rectangularSensor.xHalfAngle = new ConstantProperty(0.1);
 			rectangularSensor.yHalfAngle = new ConstantProperty(0.2);
 			rectangularSensor.intersectionColor = new ConstantProperty(new Color(0.1, 0.2, 0.3, 0.4));
@@ -142,6 +144,7 @@ define([
 			rectangularSensor.radius = new ConstantProperty(123.5);
 			rectangularSensor.show = new ConstantProperty(true);
 			rectangularSensor.lateralSurfaceMaterial = new ColorMaterialProperty(Color.WHITE);
+			testObject.rectangularSensor = rectangularSensor;
 			visualizer.update(time);
 
 			expect(scene.primitives.length).toEqual(1);
@@ -175,9 +178,10 @@ define([
 			testObject.addProperty('rectangularSensor');
 			testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
 			testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-			var rectangularSensor = testObject.rectangularSensor = new RectangularSensorGraphics();
+			var rectangularSensor = new RectangularSensorGraphics();
 			rectangularSensor.xHalfAngle = new ConstantProperty(0.1);
 			rectangularSensor.yHalfAngle = new ConstantProperty(0.2);
+			testObject.rectangularSensor = rectangularSensor;
 
 			var time = JulianDate.now();
 			expect(scene.primitives.length).toEqual(0);
@@ -197,9 +201,10 @@ define([
 			testObject.addProperty('rectangularSensor');
 			testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
 			testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-			var rectangularSensor = testObject.rectangularSensor = new RectangularSensorGraphics();
+			var rectangularSensor = new RectangularSensorGraphics();
 			rectangularSensor.xHalfAngle = new ConstantProperty(0.1);
 			rectangularSensor.yHalfAngle = new ConstantProperty(0.2);
+			testObject.rectangularSensor = rectangularSensor;
 
 			var time = JulianDate.now();
 			visualizer.update(time);

@@ -1,6 +1,6 @@
 {
   "name": "cesium-sensor-volumes",
-  "version": "1.31.0",
+  "version": "1.32.0",
   "description": "A Cesium plugin for visualizing sensor volumes.",
   "homepage": "https://cesiumjs.org",
   "license": "Apache-2.0",
@@ -12,15 +12,15 @@
     "cesium"
   ],
   "dependencies": {
-    "cesium": "1.31.0",
-    "requirejs": "2.3.2",
+    "cesium": "1.32.1",
+    "requirejs": "^2.3.3",
     "requirejs-text": "^2.0.15"
   },
   "devDependencies": {
     "almond": "^0.3.3",
-    "browser-sync": "^2.18.7",
+    "browser-sync": "^2.18.8",
     "del": "^2.2.2",
-    "electron": "1.4.15",
+    "electron": "1.6.5",
     "event-stream": "^3.3.4",
     "globby": "^6.1.0",
     "gulp": "^3.9.0",
@@ -30,12 +30,12 @@
     "gulp-requirejs-optimize": "^1.2.0",
     "gulp-size": "^2.0.0",
     "gulp-util": "^3.0.8",
-    "gulp-xo": "^0.14.0",
+    "gulp-xo": "^0.15.0",
     "jasmine-core": "^2.5.2",
-    "karma": "^1.4.1",
+    "karma": "^1.6.0",
     "karma-chrome-launcher": "^2.0.0",
     "karma-coverage": "^1.1.1",
-    "karma-electron-launcher": "^0.1.0",
+    "karma-electron-launcher": "^0.2.0",
     "karma-jasmine": "^1.1.0",
     "karma-requirejs": "^1.1.0",
     "lodash.assign": "^4.2.0",
@@ -53,7 +53,9 @@
     "globals": [
       "define"
     ],
+    "esnext": false,
     "rules": {
+      "capitalized-comments": "off",
       "func-names": "off",
       "import/no-amd": "off",
       "import/no-extraneous-dependencies": "off",

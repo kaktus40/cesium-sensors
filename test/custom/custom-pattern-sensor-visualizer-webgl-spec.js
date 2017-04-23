@@ -101,8 +101,9 @@ define([
 			var testObject = entityCollection.getOrCreateEntity('test');
 			testObject.addProperty('customPatternSensor');
 			testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-			var customPatternSensor = testObject.customPatternSensor = new CustomPatternSensorGraphics();
+			var customPatternSensor = new CustomPatternSensorGraphics();
 			customPatternSensor.directions = new ConstantProperty([new Spherical(0, 0, 0), new Spherical(1, 0, 0), new Spherical(2, 0, 0), new Spherical(3, 0, 0)]);
+			testObject.customPatternSensor = customPatternSensor;
 			visualizer.update(JulianDate.now());
 			expect(scene.primitives.length).toEqual(0);
 		});
@@ -114,8 +115,9 @@ define([
 			var testObject = entityCollection.getOrCreateEntity('test');
 			testObject.addProperty('customPatternSensor');
 			testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
-			var customPatternSensor = testObject.customPatternSensor = new CustomPatternSensorGraphics();
+			var customPatternSensor = new CustomPatternSensorGraphics();
 			customPatternSensor.directions = new ConstantProperty([new Spherical(0, 0, 0), new Spherical(1, 0, 0), new Spherical(2, 0, 0), new Spherical(3, 0, 0)]);
+			testObject.customPatternSensor = customPatternSensor;
 			visualizer.update(JulianDate.now());
 			expect(scene.primitives.length).toEqual(0);
 		});
@@ -131,7 +133,7 @@ define([
 			testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
 			testObject.orientation = new ConstantProperty(new Quaternion(0, 0, Math.sin(CesiumMath.PI_OVER_FOUR), Math.cos(CesiumMath.PI_OVER_FOUR)));
 
-			var customPatternSensor = testObject.customPatternSensor = new CustomPatternSensorGraphics();
+			var customPatternSensor = new CustomPatternSensorGraphics();
 			customPatternSensor.directions = new ConstantProperty([new Spherical(0, 0, 0), new Spherical(1, 0, 0), new Spherical(2, 0, 0), new Spherical(3, 0, 0)]);
 			customPatternSensor.intersectionColor = new ConstantProperty(new Color(0.1, 0.2, 0.3, 0.4));
 			customPatternSensor.intersectionWidth = new ConstantProperty(0.5);
@@ -139,6 +141,7 @@ define([
 			customPatternSensor.radius = new ConstantProperty(123.5);
 			customPatternSensor.show = new ConstantProperty(true);
 			customPatternSensor.lateralSurfaceMaterial = new ColorMaterialProperty(Color.WHITE);
+			testObject.customPatternSensor = customPatternSensor;
 			visualizer.update(time);
 
 			expect(scene.primitives.length).toEqual(1);
@@ -172,8 +175,9 @@ define([
 			testObject.addProperty('customPatternSensor');
 			testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
 			testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-			var customPatternSensor = testObject.customPatternSensor = new CustomPatternSensorGraphics();
+			var customPatternSensor = new CustomPatternSensorGraphics();
 			customPatternSensor.directions = new ConstantProperty([new Spherical(0, 0, 0), new Spherical(1, 0, 0), new Spherical(2, 0, 0), new Spherical(3, 0, 0)]);
+			testObject.customPatternSensor = customPatternSensor;
 
 			var time = JulianDate.now();
 			expect(scene.primitives.length).toEqual(0);
@@ -193,8 +197,9 @@ define([
 			testObject.addProperty('customPatternSensor');
 			testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
 			testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-			var customPatternSensor = testObject.customPatternSensor = new CustomPatternSensorGraphics();
+			var customPatternSensor = new CustomPatternSensorGraphics();
 			customPatternSensor.directions = new ConstantProperty([new Spherical(0, 0, 0), new Spherical(1, 0, 0), new Spherical(2, 0, 0), new Spherical(3, 0, 0)]);
+			testObject.customPatternSensor = customPatternSensor;
 
 			var time = JulianDate.now();
 			visualizer.update(time);

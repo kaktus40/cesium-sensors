@@ -11,12 +11,12 @@ module.exports = function(config) {
 
 		// list of files / patterns to load in the browser
 		files: [
+			'test/spec-main.js',
 			{ pattern: 'node_modules/cesium/Source/**/*', included: false },
 			{ pattern: 'node_modules/requirejs-text/*.js', included: false },
 			{ pattern: 'lib/**/*.js', included: false },
 			{ pattern: 'lib/**/*.glsl', included: false },
-			{ pattern: 'test/**/*.js', included: false },
-			'test/spec-main.js'
+			{ pattern: 'test/**/*.js', included: false }
 		],
 
 		// list of files to exclude

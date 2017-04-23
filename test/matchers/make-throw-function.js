@@ -11,7 +11,7 @@ define(function() {
 						var exception;
 
 						if (typeof actual !== 'function') {
-							throw new Error('Actual is not a function');
+							throw new TypeError('Actual is not a function');
 						}
 
 						try {

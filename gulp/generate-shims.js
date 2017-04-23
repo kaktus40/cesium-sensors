@@ -35,7 +35,7 @@ module.exports = function() {
 
 		this.push(new gutil.File({
 			path: 'cesium-shims.js',
-			contents: new Buffer(shimContents)
+			contents: Buffer.from(shimContents)
 		}));
 
 		cb();
