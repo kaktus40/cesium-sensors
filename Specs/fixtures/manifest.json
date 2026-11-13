@@ -1,0 +1,42 @@
+{
+  "version": 1,
+  "fixtures": [
+    {
+      "id": "benchmark-500",
+      "kind": "czml",
+      "path": "benchmark-500.czml",
+      "network": false,
+      "description": "500 satellites dynamiques avec un senseur conique par Entity."
+    },
+    {
+      "id": "ellipsoid-only",
+      "kind": "scene",
+      "network": false,
+      "terrain": false,
+      "tileset": false,
+      "description": "Scène locale destinée à valider l’occlusion ellipsoïdale."
+    },
+    {
+      "id": "opaque-primitives",
+      "kind": "scene",
+      "network": false,
+      "terrain": false,
+      "tileset": false,
+      "description": "Primitives opaques locales entre le senseur et le volume."
+    },
+    {
+      "id": "terrain-integration",
+      "kind": "integration",
+      "network": true,
+      "terrain": true,
+      "description": "Terrain réel fourni par la configuration d’intégration."
+    },
+    {
+      "id": "tileset-integration",
+      "kind": "integration",
+      "network": true,
+      "tileset": true,
+      "description": "3D Tiles opaque et objet hors champ de la caméra principale."
+    }
+  ]
+}

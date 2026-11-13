@@ -4,4 +4,6 @@ var specs = [//
 'CesiumSensorSpecs/CustomPatternSensorGraphicsSpec', //
 'CesiumSensorSpecs/CustomPatternSensorVisualizerSpec', //
 'CesiumSensorSpecs/RectangularSensorGraphicsSpec', //
-'CesiumSensorSpecs/RectangularSensorVisualizerSpec'];
+'CesiumSensorSpecs/RectangularSensorVisualizerSpec', //
+'Specs/SensorGeometrySpec', //
+'Specs/SensorOcclusionSpec'];

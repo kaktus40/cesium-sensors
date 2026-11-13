@@ -1,18 +1,63 @@
 {
-  "name": "cesium-sensors",
-  "version": "0.0.2",
-  "description": "A Cesium plugin for visualizing sensor volumes.",
-  "homepage": "http://cesiumjs.org",
+  "name": "open-sensor",
+  "version": "0.1.0",
+  "description": "Open-source sensor volumes for CesiumJS.",
+  "type": "module",
   "license": "Apache-2.0",
+  "homepage": "https://github.com/kaktus40/open-sensor",
   "repository": {
     "type": "git",
-    "url": "https://github.com/AnalyticalGraphicsInc/cesium-sensors.git"
+    "url": "https://github.com/kaktus40/open-sensor.git"
+  },
+  "engines": {
+    "node": ">=22.0.0"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/open-sensor.js",
+      "types": "./dist/open-sensor.d.ts"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE.md",
+    "CHANGELOG.md"
+  ],
+  "peerDependencies": {
+    "cesium": ">=1.147.0 <1.148.0"
   },
   "devDependencies": {
-    "compression": "1.0.8",
-    "express": "4.4.4",
-    "request": "2.36.0",
-    "requirejs": "2.1.14",
-    "yargs": "1.2.6"
+    "@playwright/test": "^1.62.1",
+    "@types/express": "^5.0.6",
+    "cesium": "1.147.0",
+    "esbuild": "^0.28.2",
+    "eslint": "^10.10.0",
+    "gulp": "^5.0.0",
+    "jasmine-core": "^5.9.0",
+    "jsdoc": "^3.6.7",
+    "karma": "^6.3.20",
+    "karma-chrome-launcher": "^3.2.0",
+    "karma-jasmine": "^5.1.0",
+    "karma-spec-reporter": "^0.0.37",
+    "prettier": "^3.9.9",
+    "tsd-jsdoc": "^2.5.0",
+    "typescript": "^6.0.2",
+    "vite": "^7.3.8"
+  },
+  "scripts": {
+    "build": "gulp build",
+    "build:release": "gulp buildRelease",
+    "docs": "gulp buildDocs",
+    "generate:benchmark-fixture": "node scripts/generate-benchmark-fixture.mjs",
+    "lint": "eslint \"src/**/*.js\" \"tests/**/*.js\" \"Specs/**/*.js\"",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "node run-tests.mjs",
+    "test:e2e": "playwright test -c tests/e2e/playwright.config.js",
+    "start:prototype": "vite --host 127.0.0.1",
+    "benchmark": "gulp benchmark",
+    "preflight": "node scripts/preflight.mjs"
   }
 }
