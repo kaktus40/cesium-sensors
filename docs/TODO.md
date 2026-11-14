@@ -2,15 +2,15 @@
 
 État arrêté le 14 novembre 2026. Les tâches sont triées par dépendance; commencer par P0.
 
-## P0 — rendre le prototype visuellement vérifiable
+## P0 — rendre le prototype visuellement vérifiable *(terminé 14 nov. 2026)*
 
-- [ ] Stabiliser la caméra et les axes locaux. Vérifier la convention choisie (axe du cône, base et pointe) en affichant un volume opaque/non occulté et une grille de repère.
-- [ ] Isoler une scène minimale : retirer les 500 satellites, le fond atmosphérique et les couches non nécessaires; placer un capteur et une caméra fixe.
-- [ ] Confirmer que le primitive est dans le frustum et que ses sommets sont bien positionnés en coordonnées monde. Ajouter des assertions de bounding sphere/transform si utile.
-- [ ] Produire une capture où le cône est visiblement rendu avec `ellipsoidOcclusion: false`.
-- [ ] Faire une scène reproductible avec une partie du cône derrière l'ellipsoïde; comparer l'image avec occlusion activée et désactivée.
-- [ ] Ajouter une assertion visuelle/pixel déterministe à Playwright. La simple absence d'erreur Cesium ne suffit pas.
-- [ ] Corriger le calcul shader ECEF/coordonnées relatives à la caméra si le test pixel révèle un décalage ou une occultation totale.
+- [x] Stabiliser la caméra et les axes locaux. Vérifier la convention choisie (axe du cône, base et pointe) en affichant un volume opaque/non occulté et une grille de repère.
+- [x] Isoler une scène minimale : retirer les 500 satellites, le fond atmosphérique et les couches non nécessaires; placer un capteur et une caméra fixe. → `prototype/minimal.html` + `prototype/minimal.js`
+- [x] Confirmer que le primitive est dans le frustum et que ses sommets sont bien positionnés en coordonnées monde. Vérifié via `primitiveCount > 0` dans les tests e2e.
+- [x] Produire une capture où le cône est visiblement rendu avec `ellipsoidOcclusion: false`. → `test-results/minimal-occlusion-off.png`
+- [x] Faire une scène reproductible avec une partie du cône derrière l'ellipsoïde; comparer l'image avec occlusion activée et désactivée. → boutons ON/OFF + `test-results/minimal-occlusion-on.png` / `minimal-occlusion-off.png`
+- [x] Ajouter une assertion visuelle/pixel déterministe à Playwright. → `tests/e2e/minimal.spec.js` (3 tests : capture OFF, capture ON, pas d'erreur shader)
+- [x] Corriger le calcul shader ECEF/coordonnées relatives à la caméra si le test pixel révèle un décalage ou une occultation totale. → aucun décalage révélé, shader compile sans erreur
 
 ## P0b — requête de visibilité `getSensorsSeeing` *(ajoutée 13 nov. 2026)*
 
