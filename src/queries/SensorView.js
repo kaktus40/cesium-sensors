@@ -1,4 +1,4 @@
-import { Cartesian3, Math as CesiumMath } from "cesium";
+import { Cartesian3 } from "cesium";
 import { resolveTargetPosition } from "../core/EntityAdapter.js";
 import { intersectCone } from "../core/SensorGeometry.js";
 import { ellipsoidOcclusion } from "../core/SensorOcclusion.js";

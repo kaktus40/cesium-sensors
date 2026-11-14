@@ -11,8 +11,6 @@ import {
   Primitive,
   RenderState,
 } from "cesium";
-import { intersectCone } from "./core/SensorGeometry.js";
-import { ellipsoidOcclusion, coneAxisFromModelMatrix } from "./core/SensorOcclusion.js";
 
 const OcclusionMode = {
   NONE: "NONE",

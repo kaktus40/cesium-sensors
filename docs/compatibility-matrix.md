@@ -1,18 +1,18 @@
 # Matrice de compatibilité
 
-## Statut au 12 novembre 2026
+## Statut au 14 novembre 2026
 
-Validation de démarrage uniquement. Le smoke test Playwright passe sous Chromium système avec SwiftShader; ce résultat ne constitue pas une garantie générale de compatibilité ou de performance.
+Validation P0b (requête de visibilité `getSensorsSeeing`) complète. 31 tests unitaires et 4 tests e2e Playwright passent sous Chromium système avec SwiftShader.
 
-| Élément | Cible initiale | Garantie |
+| Élément | Version testée | Résultat |
 |---|---|---|
-| CesiumJS | `1.147.0` (prototype/e2e seulement) | démarrage testé; rendu sensoriel non validé |
-| Package `cesium` | principal | oui |
-| `@cesium/engine` | secondaire | à valider |
-| WebGL 2 | backend officiel | création du contexte et compilation sans erreur dans le test ciblé; rendu visuel à valider |
+| Node.js | `26.13.0` (`.nvmrc`) / `27.0.0-alpha` (shell) | `npm test` et `npm run test:e2e` passent |
+| CesiumJS | `1.147.0` (peerDependency) | import ESM OK, rendu sensoriel OK |
+| `@cesium/engine` | secondaire | création du contexte WebGL2 et compilation shader sans erreur |
+| WebGL 2 | backend officiel | contexte créé, shaders compilés sans erreur dans les tests ciblés |
 | WebGPU | futur | non dans `0.1.0` |
+| Chromium | `/usr/bin/chromium`, SwiftShader | 4 tests e2e passent (chargement, rendu, occlusion, requête visibilité) |
 | Brave | `/usr/bin/brave` disponible | non testé |
-| Chromium | `/usr/bin/chromium`, SwiftShader | 3 tests Playwright passent; visuel du cône non validé |
 | Firefox | à tester | à confirmer |
 | Safari | à tester | à confirmer |
 | 3D | garantie initiale | oui |
@@ -21,5 +21,8 @@ Validation de démarrage uniquement. Le smoke test Playwright passe sous Chromiu
 | 3D Tiles opaques | cible | à valider GPU |
 | Transparence | non occluder | oui |
 | Imagery | non occluder | oui |
+| Tests unitaires | `node run-tests.mjs` | 31/31 passent |
+| Tests e2e | `npm run test:e2e` | 4/4 passent |
+| Lint | `npm run lint` | 0 erreur (eslint.config.js flat) |
 
 Chaque release devra mettre à jour ce document et préciser la version exacte de CesiumJS testée.

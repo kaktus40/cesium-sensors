@@ -30,14 +30,6 @@ export function intersectCone(origin, rayDir, coneAxis, maximumRadius, outerHalf
   const tanAngle = Math.tan(outerHalfAngle);
   const tanSq = tanAngle * tanAngle;
 
-  // Work in local cone space: ray origin O_l = M^{-1} * origin, ray dir D_l = M^{-1} * rayDir
-  // where M maps local cone space to world (rotation by coneAxis, translation by origin).
-  // For simplicity we assume coneAxis = -Z direction of local->world, i.e., the cone apex points along +Z local.
-  // Transform ray origin to local cone space: subtract origin, project onto coneAxis for z.
-  const oRel = Cartesian3.subtract(origin, origin, tmpV3); // origin relative to itself = 0 in local
-  // Actually origin IS the apex, so in local space O_l = (0, 0, 0).
-  const O_l = Cartesian3.ZERO;
-
   // Ray direction in local cone space.
   // D_l.z = dot(rayDir, coneAxis); D_l.xyz perpendicular = rayDir - D_l.z * coneAxis.
   const dz = Cartesian3.dot(rayDir, coneAxis, tmpV3);
@@ -54,13 +46,10 @@ export function intersectCone(origin, rayDir, coneAxis, maximumRadius, outerHalf
   // rho^2 = t^2 * dx2; z = t*dz.
   // t^2 * dx2 = t^2 * dz^2 * tanSq  =>  t^2 * (dx2 - dz2 * tanSq) = 0.
   const A = dx2 - dz2 * tanSq;
-  const B = 0.0;
-  const C = 0.0;
 
   // Degenerate cases handled below.
   const eps = 1e-12;
   let t1 = null;
-  let t2 = null;
 
   if (Math.abs(A) < eps) {
     // Ray parallel to cone surface or along axis.

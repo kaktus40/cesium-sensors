@@ -1,4 +1,4 @@
-import { Cartesian3, Math as CesiumMath } from "cesium";
+import { Cartesian3 } from "cesium";
 
 const tmpCartesian = new Cartesian3();
 const tmpCartesianB = new Cartesian3();
