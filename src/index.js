@@ -6,3 +6,4 @@ export { ellipsoidOcclusion, ellipsoidRayOcclusion, coneAxisFromModelMatrix } fr
 export { resolveTargetPosition, targetHasPosition } from "./core/EntityAdapter.js";
 export { ConicSensorGraphics } from "./dataSources/ConicSensorGraphics.js";
 export { ConicSensorVisualizer } from "./dataSources/ConicSensorVisualizer.js";
+export { initialize, processConicSensor } from "./dataSources/czml.js";

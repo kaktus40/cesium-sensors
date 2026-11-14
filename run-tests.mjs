@@ -81,6 +81,7 @@ await import("./Specs/SensorViewSpec.js");
 await import("./Specs/SensorSystemSpec.js");
 await import("./Specs/ConicSensorGraphicsSpec.js");
 await import("./Specs/ConicSensorVisualizerSpec.js");
+await import("./Specs/CzmlSpec.js");
 
 process.stdout.write(`\n${results.pass} passed, ${results.fail} failed\n`);
 if (results.fail > 0) {
