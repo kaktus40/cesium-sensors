@@ -72,6 +72,7 @@ SensorSystem.prototype.getSensorCount = function () {
  * @param {boolean} [options.includeOccludedVolume=false] Include sensors whose line of sight is occluded.
  * @param {Cesium.JulianDate} [options.time] Time for temporal properties (default: scene clock).
  * @param {Cartesian3} [options.inverseRadii] Ellipsoid inverse radii.
+ * @param {boolean} [options.sceneOcclusion=false] Enable terrain/scene occlusion test.
  * @returns {Promise<SensorView[]>} Results sorted by distance ascending.
  */
 SensorSystem.prototype.getSensorsSeeing = function (target, options = {}) {
@@ -82,11 +83,15 @@ SensorSystem.prototype.getSensorsSeeing = function (target, options = {}) {
 
     const time = options.time || (this.scene.clock ? this.scene.clock.currentTime : undefined);
     const inverseRadii = options.inverseRadii;
+    const sceneOcclusion = options.sceneOcclusion === true;
+    const scene = options.scene || this.scene;
 
     return computeSensorViews(this._sensors, target, {
       includeOccludedVolume: options.includeOccludedVolume,
       time,
       inverseRadii,
+      sceneOcclusion,
+      scene,
     });
   });
 };

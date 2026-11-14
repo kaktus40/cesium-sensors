@@ -1,7 +1,8 @@
-import { Cartesian3 } from "cesium";
+import { Cartesian3, defined } from "cesium";
 import { resolveTargetPosition } from "../core/EntityAdapter.js";
 import { intersectCone } from "../core/SensorGeometry.js";
 import { ellipsoidOcclusion } from "../core/SensorOcclusion.js";
+import { rayVsTerrain, createRay } from "../core/SceneOcclusion.js";
 
 const tmpDirection = new Cartesian3();
 const tmpAxis = new Cartesian3();
@@ -27,6 +28,8 @@ const tmpConeAxis = new Cartesian3();
  * @param {boolean} [options.includeOccludedVolume=false] - Include sensors whose line of sight is occluded.
  * @param {Cesium.JulianDate} [options.time] - Time for temporal properties.
  * @param {Cartesian3} [options.inverseRadii] - Ellipsoid inverse radii (from Cesium).
+ * @param {boolean} [options.sceneOcclusion=false] - Enable terrain/scene occlusion test.
+ * @param {object} [options.scene] - Cesium Scene (required if sceneOcclusion is true).
  * @returns {SensorView|null} null if the sensor cannot see the target (and includeOccludedVolume is false).
  */
 export function computeSensorView(sensor, target, options = {}) {
@@ -34,6 +37,8 @@ export function computeSensorView(sensor, target, options = {}) {
     includeOccludedVolume = false,
     time,
     inverseRadii,
+    sceneOcclusion = false,
+    scene,
   } = options;
 
   if (!sensor.show) {
@@ -84,7 +89,7 @@ export function computeSensorView(sensor, target, options = {}) {
   // Distance along the ray to the surface of the volume.
   const distance = hitDistance;
 
-  // Occlusion test.
+  // Occlusion test (ellipsoid reference).
   let occluded = false;
   if (sensor.occlusionMode !== "NONE" && inverseRadii) {
     const result = ellipsoidOcclusion(
@@ -94,6 +99,13 @@ export function computeSensorView(sensor, target, options = {}) {
       sensor.occlusionMode !== "NONE"
     );
     occluded = result.occluded;
+  }
+
+  // Occlusion test (terrain/scene).
+  if (!occluded && sceneOcclusion && defined(scene)) {
+    const ray = createRay(sensorOrigin, targetPos);
+    const terrainResult = rayVsTerrain(ray, scene, distToTarget);
+    occluded = terrainResult.occluded;
   }
 
   // If occluded and we don't include occluded volumes, skip.
@@ -115,6 +127,11 @@ export function computeSensorView(sensor, target, options = {}) {
  * @param {object[]} sensors - Array of sensor instances.
  * @param {object|Cartesian3} target - Entity, Primitive, or Cartesian3 target.
  * @param {object} [options]
+ * @param {boolean} [options.includeOccludedVolume=false] - Include sensors whose line of sight is occluded.
+ * @param {Cesium.JulianDate} [options.time] - Time for temporal properties.
+ * @param {Cartesian3} [options.inverseRadii] - Ellipsoid inverse radii (from Cesium).
+ * @param {boolean} [options.sceneOcclusion=false] - Enable terrain/scene occlusion test.
+ * @param {object} [options.scene] - Cesium Scene (required if sceneOcclusion is true).
  * @returns {SensorView[]} Array of SensorView results, sorted by distance ascending.
  */
 export function computeSensorViews(sensors, target, options = {}) {

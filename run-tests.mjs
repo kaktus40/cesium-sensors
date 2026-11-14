@@ -82,6 +82,7 @@ await import("./Specs/SensorSystemSpec.js");
 await import("./Specs/ConicSensorGraphicsSpec.js");
 await import("./Specs/ConicSensorVisualizerSpec.js");
 await import("./Specs/CzmlSpec.js");
+await import("./Specs/SceneOcclusionSpec.js");
 
 process.stdout.write(`\n${results.pass} passed, ${results.fail} failed\n`);
 if (results.fail > 0) {

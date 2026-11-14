@@ -3,6 +3,7 @@ export { SensorSystem } from "./core/SensorSystem.js";
 export { computeSensorView, computeSensorViews } from "./queries/SensorView.js";
 export { intersectCone } from "./core/SensorGeometry.js";
 export { ellipsoidOcclusion, ellipsoidRayOcclusion, coneAxisFromModelMatrix } from "./core/SensorOcclusion.js";
+export { rayVsTerrain, rayVs3DTiles, createRay } from "./core/SceneOcclusion.js";
 export { resolveTargetPosition, targetHasPosition } from "./core/EntityAdapter.js";
 export { ConicSensorGraphics } from "./dataSources/ConicSensorGraphics.js";
 export { ConicSensorVisualizer } from "./dataSources/ConicSensorVisualizer.js";
