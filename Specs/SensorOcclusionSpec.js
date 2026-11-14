@@ -31,6 +31,38 @@ describe("SensorOcclusion.ellipsoidOcclusion", function() {
       ellipsoidOcclusion(origin, origin, undefined, true);
     }).toThrow();
   });
+
+  it("returns occluded true when segment enters ellipsoid before reaching target outside", function() {
+    // Ray from 1200km altitude toward Earth center; target is on far side of ellipsoid.
+    const target = Cartesian3.negate(origin, new Cartesian3());
+    Cartesian3.multiplyByScalar(target, 2.0, target); // far side, outside ellipsoid
+    const result = ellipsoidOcclusion(origin, target, inverseRadii, true);
+    expect(result.occluded).toBe(true);
+    expect(result.t).toBeGreaterThan(0);
+  });
+
+  it("returns occluded false when ray points away from ellipsoid", function() {
+    // Ray pointing directly away from Earth's center.
+    const dir = Cartesian3.clone(origin, new Cartesian3());
+    Cartesian3.normalize(dir, dir);
+    const target = Cartesian3.add(
+      origin,
+      Cartesian3.multiplyByScalar(dir, 500000.0, new Cartesian3()),
+      new Cartesian3(),
+    );
+    const result = ellipsoidOcclusion(origin, target, inverseRadii, true);
+    expect(result.occluded).toBe(false);
+    expect(result.t).toBeNull();
+  });
+
+  it("returns occluded true when both origin and target are inside ellipsoid", function() {
+    // Both points below surface (inside ellipsoid).
+    const originInside = Cartesian3.fromDegrees(-75.0, 40.0, -100.0);
+    const targetInside = Cartesian3.fromDegrees(-75.0, 40.0, -200.0);
+    const result = ellipsoidOcclusion(originInside, targetInside, inverseRadii, true);
+    expect(result.occluded).toBe(true);
+    expect(result.t).toBe(1.0);
+  });
 });
 
 describe("SensorOcclusion.ellipsoidRayOcclusion", function() {
@@ -58,5 +90,28 @@ describe("SensorOcclusion.ellipsoidRayOcclusion", function() {
     const result = ellipsoidRayOcclusion(origin, dir, 2000000.0, inverseRadii, true);
     expect(result.occluded).toBe(true);
     expect(result.t).toBeGreaterThan(0);
+  });
+
+  it("returns occluded false when ray points away from ellipsoid", function() {
+    const dir = Cartesian3.clone(origin, new Cartesian3());
+    Cartesian3.normalize(dir, dir);
+    const result = ellipsoidRayOcclusion(origin, dir, 2000000.0, inverseRadii, true);
+    expect(result.occluded).toBe(false);
+    expect(result.t).toBeNull();
+  });
+
+  it("returns occluded false when hit is beyond maxDistance", function() {
+    const dir = Cartesian3.negate(origin, new Cartesian3());
+    Cartesian3.normalize(dir, dir);
+    const result = ellipsoidRayOcclusion(origin, dir, 100.0, inverseRadii, true);
+    expect(result.occluded).toBe(false);
+    expect(result.t).toBeNull();
+  });
+
+  it("returns occluded true when origin is inside ellipsoid", function() {
+    const originInside = Cartesian3.fromDegrees(-75.0, 40.0, -100.0);
+    const dir = Cartesian3.UNIT_Z;
+    const result = ellipsoidRayOcclusion(originInside, dir, 2000000.0, inverseRadii, true);
+    expect(result.occluded).toBe(true);
   });
 });

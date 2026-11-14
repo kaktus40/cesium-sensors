@@ -2,6 +2,7 @@ import { Cartesian3 } from "cesium";
 
 const tmpCartesian = new Cartesian3();
 const tmpCartesianB = new Cartesian3();
+const tmpCartesianC = new Cartesian3();
 
 /**
  * Evaluate ellipsoid occlusion for a segment from sensor origin to a target point.
@@ -11,6 +12,17 @@ const tmpCartesianB = new Cartesian3();
  *
  * The ellipsoid test is performed in scaled space where the ellipsoid becomes
  * a unit sphere centered at the origin.
+ *
+ * LIMITES :
+ *   - L'origine du capteur est supposée à l'extérieur de l'ellipsoïde (cas typique :
+ *     capteur en altitude). Si l'origine est à l'intérieur, le test ne le détecte pas
+ *     (le shader fragment a la même limitation : il ne vérifie que le point cible).
+ *   - Un rayon tangent (discriminant == 0) n'est pas considéré comme une intersection
+ *     car `t` tombe hors de l'intervalle (0.00001, 0.99999).
+ *   - Le test ne couvre que l'occlusion par l'ellipsoïde de référence (WGS84 par
+ *     défaut), pas par le terrain, les modèles 3D Tiles ou d'autres capteurs.
+ *   - La précision est limitée par les flottants 32 bits du shader ; le CPU utilise
+ *     des flottants 64 bits mais le résultat doit rester cohérent avec le GPU.
  *
  * @param {Cartesian3} originWC Sensor origin in world coordinates.
  * @param {Cartesian3} pointWC Target point in world coordinates.
@@ -27,7 +39,7 @@ export function ellipsoidOcclusion(originWC, pointWC, inverseRadii, enabled) {
 
   const originScaled = Cartesian3.multiplyComponents(inverseRadii, originWC, tmpCartesian);
   const pointScaled = Cartesian3.multiplyComponents(inverseRadii, pointWC, tmpCartesianB);
-  const ray = Cartesian3.subtract(pointScaled, originScaled, tmpCartesian);
+  const ray = Cartesian3.subtract(pointScaled, originScaled, tmpCartesianC);
 
   const a = Cartesian3.dot(ray, ray);
   const b = 2.0 * Cartesian3.dot(originScaled, ray);
@@ -55,6 +67,12 @@ export function ellipsoidOcclusion(originWC, pointWC, inverseRadii, enabled) {
 /**
  * Test whether a ray from the sensor origin is occluded by the ellipsoid
  * before reaching a given distance along the ray.
+ *
+ * LIMITES :
+ *   - Même limitation que `ellipsoidOcclusion` : l'origine est supposée à l'extérieur
+ *     de l'ellipsoïde.
+ *   - `maxDistance` est comparé à la distance du premier hit positif (t > 0.00001).
+ *   - Un rayon tangent (discriminant == 0) n'est pas considéré comme une intersection.
  *
  * @param {Cartesian3} originWC Sensor origin in world coordinates.
  * @param {Cartesian3} rayDir Unit world direction of the ray.
