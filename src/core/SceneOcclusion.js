@@ -1,4 +1,10 @@
-import { Cartesian3, Ray, defined, DeveloperError } from "cesium";
+import {
+  Cartesian3,
+  Ray,
+  defined,
+  DeveloperError,
+} from "cesium";
+import { DepthPass } from "./DepthPass.js";
 
 /**
  * Teste si un rayon est occulté par le terrain avant d'atteindre une distance donnée.
@@ -55,11 +61,13 @@ export function rayVsTerrain(ray, scene, maxDistance) {
  *
  * @param {Ray} ray Rayon depuis l'origine du capteur vers la cible.
  * @param {Scene} scene Scène Cesium contenant les modèles 3D Tiles.
- * @param {number} _maxDistance Distance maximale à considérer (réservé pour la passe de profondeur).
- * @returns {{ occluded: boolean, hit: Cartesian3|null }} Toujours `{ occluded: false, hit: null }`
- *   jusqu'à implémentation de la passe de profondeur.
+ * @param {number} maxDistance Distance maximale à considérer.
+ * @param {object} [options] Options supplémentaires.
+ * @param {DepthPass} [options.depthPass] Instance DepthPass pré-créée (tests).
+ * @returns {{ occluded: boolean, hitDistance: number|null }} `occluded` est true
+ *   si un modèle 3D Tiles opaque est touché avant `maxDistance`.
  */
-export function rayVs3DTiles(ray, scene, _maxDistance) {
+export function rayVs3DTiles(ray, scene, maxDistance, options = {}) {
   //>>includeStart('debug', pragmas.debug);
   if (!defined(ray)) {
     throw new DeveloperError("ray is required.");
@@ -69,9 +77,19 @@ export function rayVs3DTiles(ray, scene, _maxDistance) {
   }
   //>>includeEnd('debug');
 
-  // TODO: Implémenter une passe de profondeur dédiée (offscreen) pour lire
-  // la profondeur des modèles 3D Tiles opaques le long du rayon.
-  return { occluded: false, hit: null };
+  const depthPass = options.depthPass || new DepthPass({
+    context: scene.context,
+    scene,
+  });
+
+  let ownsDepthPass = !options.depthPass;
+  try {
+    return depthPass.testRay(ray.origin, ray.direction, maxDistance);
+  } finally {
+    if (ownsDepthPass) {
+      depthPass.destroy();
+    }
+  }
 }
 
 /**

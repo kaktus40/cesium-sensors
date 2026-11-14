@@ -1,5 +1,6 @@
 import { Cartesian3, Ray, Ellipsoid } from "cesium";
 import { rayVsTerrain, rayVs3DTiles, createRay } from "../src/core/SceneOcclusion.js";
+import { DepthPass } from "../src/core/DepthPass.js";
 
 describe("SceneOcclusion.createRay", function () {
   it("creates a ray from origin to target", function () {
@@ -106,12 +107,36 @@ describe("SceneOcclusion.rayVsTerrain", function () {
 describe("SceneOcclusion.rayVs3DTiles", function () {
   const origin = Cartesian3.fromDegrees(-75.0, 40.0, 1200000.0);
 
-  it("returns occluded false (stub implementation)", function () {
-    const scene = { globe: { show: true } };
+  it("delegates to depthPass.testRay and returns its result", function () {
+    const scene = { context: {}, globe: { show: true } };
     const ray = new Ray(origin, Cartesian3.UNIT_Z);
-    const result = rayVs3DTiles(ray, scene, 2000000.0);
-    expect(result.occluded).toBe(false);
-    expect(result.hit).toBeNull();
+    const expected = { occluded: true, hitDistance: 123456.0 };
+    const depthPass = {
+      testRay: function () {
+        return expected;
+      },
+      destroy: function () {},
+    };
+    const result = rayVs3DTiles(ray, scene, 2000000.0, { depthPass });
+    expect(result).toBe(expected);
+    expect(result.occluded).toBe(true);
+    expect(result.hitDistance).toBe(123456.0);
+  });
+
+  it("does not destroy a provided depthPass", function () {
+    const scene = { context: {}, globe: { show: true } };
+    const ray = new Ray(origin, Cartesian3.UNIT_Z);
+    let destroyed = false;
+    const depthPass = {
+      testRay: function () {
+        return { occluded: false, hitDistance: null };
+      },
+      destroy: function () {
+        destroyed = true;
+      },
+    };
+    rayVs3DTiles(ray, scene, 2000000.0, { depthPass });
+    expect(destroyed).toBe(false);
   });
 
   it("throws on invalid ray", function () {

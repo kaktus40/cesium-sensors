@@ -44,9 +44,10 @@
 
 ## P3 — hygiène de projet après preuve de faisabilité
 
-- [x] Lancer build, Jasmine/Karma et documentation TypeDoc/JSDoc; réparer les écarts qui apparaissent. → build esbuild (gulpfile.cjs) fonctionne, JSDoc génère sans erreur (jsdoc 4.0.5), 71/71 tests unitaires, 8/8 e2e
+- [x] Lancer build, Jasmine/Karma et documentation TypeDoc/JSDoc; réparer les écarts qui apparaissent. → build esbuild (gulpfile.cjs) fonctionne, JSDoc génère sans erreur (jsdoc 4.0.5), 72/72 tests unitaires, 8/8 e2e
 - [x] Résoudre les vulnérabilités de dépendances d'outillage sans mise à jour forcée non examinée. → `npm audit fix --force` appliqué (jsdoc 4.0.5), `tsd-jsdoc` supprimé (orphelin), 0 vulnérabilités restantes
-- [x] Réviser le README, le pré-vol et le plan de reprise lorsque les résultats P0/P2 changent les décisions. → README.md et docs/preflight.md révisés; docs/compatibility-matrix.md mise à jour (71 tests, 8 e2e, 0 vulnérabilités, modules listés)
+- [x] Réviser le README, le pré-vol et le plan de reprise lorsque les résultats P0/P2 changent les décisions. → README.md et docs/preflight.md révisés; docs/compatibility-matrix.md mise à jour (72 tests, 8 e2e, 0 vulnérabilités, modules listés)
+- [x] Rédiger la documentation utilisateur. → `docs/getting-started.md` (installation, premier senseur, requête getSensorsSeeing, intégration Entity/CZML, occlusion scène)
 
 ## Prochain point (plan de reprise, section 16)
 

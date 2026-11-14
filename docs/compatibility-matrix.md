@@ -2,7 +2,7 @@
 
 ## Statut au 14 novembre 2026
 
-Validation P3 (intégration Entity/CZML + scène minimale) complète. 71 tests unitaires et 8 tests e2e Playwright passent sous Chromium système avec SwiftShader. 0 vulnérabilités npm.
+Validation P3 (intégration Entity/CZML + scène minimale) complète. 72 tests unitaires et 8 tests e2e Playwright passent sous Chromium système avec SwiftShader. 0 vulnérabilités npm.
 
 | Élément | Version testée | Résultat |
 |---|---|---|
@@ -18,10 +18,10 @@ Validation P3 (intégration Entity/CZML + scène minimale) complète. 71 tests u
 | 3D | garantie initiale | oui |
 | 2D/Columbus/morph | selon prototype | à confirmer |
 | Terrain | cible | `rayVsTerrain()` via `Globe.pick()`, non validé GPU sous scène complexe |
-| 3D Tiles opaques | cible | Aucune API publique de ray-tileset intersection; `rayVs3DTiles()` stub (passe de profondeur à implémenter) |
+| 3D Tiles opaques | cible | `DepthPass` + `rayVs3DTiles()` implémentés (passe de profondeur offscreen, échantillonnage le long du rayon) |
 | Transparence | non occluder | oui |
 | Imagery | non occluder | oui |
-| Tests unitaires | `node run-tests.mjs` | 71/71 passent |
+| Tests unitaires | `node run-tests.mjs` | 72/72 passent |
 | Tests e2e | `npm run test:e2e` | 8/8 passent |
 | Lint | `npm run lint` | 0 erreur (eslint.config.js flat) |
 | Build | `npm run build` (esbuild) | `dist/open-sensor.js` généré |
@@ -33,7 +33,8 @@ Modules créés :
 - `src/core/SensorSystem.js` — enregistrement des senseurs, `getSensorsSeeing()`
 - `src/core/SensorGeometry.js` — intersection rayon-cône
 - `src/core/SensorOcclusion.js` — occlusion ellipsoïde (CPU, validée vs shader fragment)
-- `src/core/SceneOcclusion.js` — `rayVsTerrain()`, `rayVs3DTiles()` (stub), `createRay()`
+- `src/core/SceneOcclusion.js` — `rayVsTerrain()`, `rayVs3DTiles()`, `createRay()`
+- `src/core/DepthPass.js` — passe de profondeur offscreen pour occlusion 3D Tiles
 - `src/core/EntityAdapter.js` — résolution de position d'Entity/Primitive/Cartesian3
 - `src/queries/SensorView.js` — `computeSensorView()`, `computeSensorViews()` avec support `sceneOcclusion`
 - `src/ConicSensor.js` — classe `ConicSensor` avec `setModelMatrix()`, `update()`
