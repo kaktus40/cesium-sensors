@@ -44,9 +44,9 @@
 
 ## P3 — hygiène de projet après preuve de faisabilité
 
-- [x] Lancer build, Jasmine/Karma et documentation TypeDoc/JSDoc; réparer les écarts qui apparaissent. → build esbuild (gulpfile.cjs) fonctionne, JSDoc génère sans erreur, 37/37 tests unitaires, 7/7 e2e
-- [ ] Résoudre les vulnérabilités de dépendances d'outillage sans mise à jour forcée non examinée. → 27 vulnérabilités en devDependencies, 0 en production (`npm audit --omit=dev`); non corrigées automatiquement (pas de `npm audit fix --force`)
-- [x] Réviser le README, le pré-vol et le plan de reprise lorsque les résultats P0/P2 changent les décisions. → README.md et docs/preflight.md révisés; plan de reprise conservé comme vision long terme
+- [x] Lancer build, Jasmine/Karma et documentation TypeDoc/JSDoc; réparer les écarts qui apparaissent. → build esbuild (gulpfile.cjs) fonctionne, JSDoc génère sans erreur (jsdoc 4.0.5), 71/71 tests unitaires, 8/8 e2e
+- [x] Résoudre les vulnérabilités de dépendances d'outillage sans mise à jour forcée non examinée. → `npm audit fix --force` appliqué (jsdoc 4.0.5), `tsd-jsdoc` supprimé (orphelin), 0 vulnérabilités restantes
+- [x] Réviser le README, le pré-vol et le plan de reprise lorsque les résultats P0/P2 changent les décisions. → README.md et docs/preflight.md révisés; docs/compatibility-matrix.md mise à jour (71 tests, 8 e2e, 0 vulnérabilités, modules listés)
 
 ## Prochain point (plan de reprise, section 16)
 
