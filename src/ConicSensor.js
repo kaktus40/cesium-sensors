@@ -3,6 +3,7 @@ import {
   Color,
   ColorGeometryInstanceAttribute,
   CylinderGeometry,
+  defined,
   GeometryInstance,
   Math as CesiumMath,
   Matrix3,
@@ -203,6 +204,62 @@ export class ConicSensor {
     if (this._primitive) {
       this._primitive.destroy();
       this._primitive = null;
+    }
+  }
+
+  /**
+   * Update the sensor's local-to-world transform and rebuild the underlying
+   * primitive if the transform changed.
+   *
+   * @param {Matrix4} modelMatrix New local-to-world transform.
+   */
+  setModelMatrix(modelMatrix) {
+    if (!Matrix4.equals(modelMatrix, this.modelMatrix)) {
+      this.modelMatrix = Matrix4.clone(modelMatrix, this.modelMatrix);
+      this._buildPrimitive();
+    }
+  }
+
+  /**
+   * Update dynamic sensor properties and rebuild the primitive if geometry
+   * changed.
+   *
+   * @param {object} options Updated options.
+   * @param {number} [options.maximumRadius]
+   * @param {number} [options.outerHalfAngle]
+   * @param {Color} [options.color]
+   * @param {string} [options.occlusionMode]
+   * @param {boolean} [options.show]
+   */
+  update(options) {
+    let needsRebuild = false;
+
+    if (defined(options.maximumRadius) && options.maximumRadius !== this.maximumRadius) {
+      this.maximumRadius = options.maximumRadius;
+      needsRebuild = true;
+    }
+    if (defined(options.outerHalfAngle) && options.outerHalfAngle !== this.outerHalfAngle) {
+      this.outerHalfAngle = options.outerHalfAngle;
+      needsRebuild = true;
+    }
+    if (defined(options.color) && !Color.equals(options.color, this.color)) {
+      this.color = Color.clone(options.color, this.color);
+      needsRebuild = true;
+    }
+    if (defined(options.occlusionMode) && options.occlusionMode !== this.occlusionMode) {
+      this.occlusionMode = options.occlusionMode;
+      needsRebuild = true;
+    }
+    if (defined(options.show) && options.show !== this.show) {
+      this.show = options.show;
+    }
+
+    if (needsRebuild) {
+      this._buildPrimitive();
+    }
+
+    if (defined(options.show)) {
+      this.primitive.show = this.show;
     }
   }
 

@@ -50,7 +50,9 @@
 
 ## Prochain point (plan de reprise, section 16)
 
-- [ ] Porter ConicSensorGraphics et un visualizer minimal (point 6 de la séquence recommandée ; début de la Phase 2 — portage du modèle de données Entity/CZML)
+- [x] Porter ConicSensorGraphics et un visualizer minimal (point 6 de la séquence recommandée ; début de la Phase 2 — portage du modèle de données Entity/CZML). → `src/dataSources/ConicSensorGraphics.js`, `src/dataSources/ConicSensorVisualizer.js`, `src/ConicSensor.js` (setModelMatrix, update), `src/index.js`
+- [ ] Ajouter des tests unitaires pour ConicSensorGraphics et ConicSensorVisualizer.
+- [ ] Porter l'intégration CZML (updater + visualizer) pour `openSensor_sensors`.
 
 ## Commandes de reprise
 
