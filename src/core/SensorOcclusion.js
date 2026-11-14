@@ -106,9 +106,9 @@ export function ellipsoidRayOcclusion(originWC, rayDir, maxDistance, inverseRadi
  * @returns {Cartesian3} The cone axis direction in world coordinates.
  */
 export function coneAxisFromModelMatrix(modelMatrix, result) {
-  // Column 2 of the upper 3x3 is the local +Z axis.
-  result.x = modelMatrix[2];
-  result.y = modelMatrix[6];
+  // Column 2 of the upper 3x3 is the local +Z axis (cone axis).
+  result.x = modelMatrix[8];
+  result.y = modelMatrix[9];
   result.z = modelMatrix[10];
   return Cartesian3.normalize(result, result);
 }

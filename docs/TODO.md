@@ -20,10 +20,10 @@
 - [x] Créer `src/core/SensorSystem.js` : enregistrement des senseurs, méthode `getSensorsSeeing`.
 - [x] Créer `src/queries/SensorView.js` : calcul d'un `SensorView` (distance, inVolume, occluded).
 - [x] Tests Jasmine/Karma pour `SensorGeometry` et `SensorOcclusion`.
-- [ ] Tests Jasmine/Karma pour `SensorView` et `SensorSystem.getSensorsSeeing`.
+- [x] Tests Jasmine/Karma pour `SensorView` et `SensorSystem.getSensorsSeeing` (31/31 passent).
 - [ ] Test Playwright e2e : scène avec 2 senseurs, assertion du résultat.
 - [ ] Démonstration dans `prototype/main.js` (bouton Query).
-- [ ] Mettre à jour `docs/api/open-sensor-api.md` avec la méthode `getSensorsSeeing`.
+- [x] Mettre à jour `docs/api/open-sensor-api.md` avec la méthode `getSensorsSeeing`.
 
 ## P1 — rendre les contrôles développeur fiables
 

@@ -77,6 +77,8 @@ globalThis.afterEach = (fn) => {};
 // Import and run specs
 await import("./Specs/SensorGeometrySpec.js");
 await import("./Specs/SensorOcclusionSpec.js");
+await import("./Specs/SensorViewSpec.js");
+await import("./Specs/SensorSystemSpec.js");
 
 process.stdout.write(`\n${results.pass} passed, ${results.fail} failed\n`);
 if (results.fail > 0) {

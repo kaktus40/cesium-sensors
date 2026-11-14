@@ -1,3 +1,11 @@
 node_modules/
 Source/main.js
 Build/MinifiedShaders/
+dist/
+coverage/
+playwright-report/
+test-results/
+.cache/
+.tmp/
+*.local
+*.log

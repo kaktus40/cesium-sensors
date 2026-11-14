@@ -5,6 +5,7 @@ import { ellipsoidOcclusion } from "../core/SensorOcclusion.js";
 
 const tmpDirection = new Cartesian3();
 const tmpAxis = new Cartesian3();
+const tmpConeAxis = new Cartesian3();
 
 /**
  * Result of a visibility query for a single sensor.
@@ -64,7 +65,7 @@ export function computeSensorView(sensor, target, options = {}) {
   Cartesian3.normalize(direction, direction);
 
   // Cone axis from model matrix.
-  const coneAxis = Cartesian3.fromArray([sensor.modelMatrix[2], sensor.modelMatrix[6], sensor.modelMatrix[10]], 0, tmpAxis);
+  const coneAxis = Cartesian3.fromArray([sensor.modelMatrix[8], sensor.modelMatrix[9], sensor.modelMatrix[10]], 0, tmpConeAxis);
 
   // Intersection with the sensor volume.
   const hitDistance = intersectCone(
