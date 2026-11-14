@@ -1,6 +1,6 @@
 # Todo — reprise du prototype `open-sensor`
 
-État arrêté le 13 novembre 2026. Les tâches sont triées par dépendance; commencer par P0.
+État arrêté le 14 novembre 2026. Les tâches sont triées par dépendance; commencer par P0.
 
 ## P0 — rendre le prototype visuellement vérifiable
 
@@ -21,8 +21,8 @@
 - [x] Créer `src/queries/SensorView.js` : calcul d'un `SensorView` (distance, inVolume, occluded).
 - [x] Tests Jasmine/Karma pour `SensorGeometry` et `SensorOcclusion`.
 - [x] Tests Jasmine/Karma pour `SensorView` et `SensorSystem.getSensorsSeeing` (31/31 passent).
-- [ ] Test Playwright e2e : scène avec 2 senseurs, assertion du résultat.
-- [ ] Démonstration dans `prototype/main.js` (bouton Query).
+- [x] Test Playwright e2e : scène avec 2 senseurs, assertion du résultat (`tests/e2e/prototype.spec.js`).
+- [x] Démonstration dans `prototype/main.js` (bouton Query + zone résultats).
 - [x] Mettre à jour `docs/api/open-sensor-api.md` avec la méthode `getSensorsSeeing`.
 
 ## P1 — rendre les contrôles développeur fiables

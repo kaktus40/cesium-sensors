@@ -34,13 +34,14 @@ test("compiles the ellipsoid occlusion shader and exposes its runtime switch", a
 
   const state = await page.evaluate(() => {
     const { viewer, prototypeSensor } = window.openSensorPrototype;
-    const uniforms = prototypeSensor.appearance.uniforms;
+    const uniforms = prototypeSensor.primitive.appearance.uniforms;
     const enabled = uniforms.u_ellipsoidOcclusion;
     window.openSensorPrototype.setEllipsoidOcclusion = (value) => {
-      window.openSensorPrototype.prototypeSensor.appearance.uniforms.u_ellipsoidOcclusion = value;
+      window.openSensorPrototype.prototypeSensor.primitive.appearance.uniforms.u_ellipsoidOcclusion =
+        value;
       viewer.scene.requestRender();
     };
-    return { enabled, primitiveReady: prototypeSensor.ready };
+    return { enabled, primitiveReady: prototypeSensor.primitive.ready };
   });
 
   expect(state.enabled).toBe(true);
@@ -50,4 +51,20 @@ test("compiles the ellipsoid occlusion shader and exposes its runtime switch", a
   await expect(page.getByText("An error occurred while rendering")).toHaveCount(0);
   await page.screenshot({ path: "test-results/conic-sensor-no-ellipsoid-occlusion.png" });
   expect(shaderErrors).toEqual([]);
+});
+
+test("query visibility via getSensorsSeeing returns sensors seeing the target", async ({
+  page,
+}) => {
+  await page.goto("/");
+  await expect(page.locator("#status")).toHaveText("Loaded 500 benchmark entities");
+
+  await page.click("#btn-query");
+
+  // Le principal capteur (orienté verticalement, cible au-dessus) doit voir la cible.
+  await expect(page.locator("#query-results")).toContainText("sensor-principal");
+  await expect(page.locator("#query-results")).toContainText("dansVolume: true");
+  await expect(page.locator("#query-results")).toContainText("occulté: false");
+
+  await page.screenshot({ path: "test-results/query-results.png" });
 });
