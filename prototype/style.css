@@ -58,6 +58,22 @@ body,
   background: #1087e0;
 }
 
+#btn-test-pick,
+#btn-test-height {
+  padding: 6px 12px;
+  font: 13px sans-serif;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#btn-test-pick:hover,
+#btn-test-height:hover {
+  background: #34ce58;
+}
+
 #query-results {
   padding: 8px 12px;
   background: rgb(0 0 0 / 70%);
