@@ -18,6 +18,18 @@ const scratchPosition = new Cartesian3();
 const scratchOrientation = new Quaternion();
 
 /**
+ * Get the value of a property, handling both Property instances and raw values.
+ * If the value is a Property (has getValue), use Property.getValueOrDefault;
+ * otherwise return the raw value or the default.
+ */
+function getPropertyValue(prop, time, defaultValue) {
+  if (prop !== undefined && typeof prop.getValue === "function") {
+    return Property.getValueOrDefault(prop, time, defaultValue);
+  }
+  return prop !== undefined ? prop : defaultValue;
+}
+
+/**
  * A {@link Visualizer} which maps {@link Entity#conicSensor} to a {@link ConicSensor}
  * primitive and registers it with a {@link SensorSystem}.
  *
@@ -26,8 +38,12 @@ const scratchOrientation = new Quaternion();
  *
  * @param {Scene} scene The scene the primitives will be rendered in.
  * @param {EntityCollection} entityCollection The entityCollection to visualize.
+ * @param {function} [createSensor] Optional factory to create ConicSensor instances.
+ *   Used primarily for testing to avoid WebGL-dependent primitive creation.
+ *   Signature: (options) => ConicSensor-like object with { primitive, addTo, destroy,
+ *   setModelMatrix, update, show, maximumRadius, outerHalfAngle, color, occlusionMode, id }.
  */
-export function ConicSensorVisualizer(scene, entityCollection) {
+export function ConicSensorVisualizer(scene, entityCollection, createSensor) {
   //>>includeStart('debug', pragmas.debug);
   if (!defined(scene)) {
     throw new DeveloperError("scene is required.");
@@ -48,6 +64,7 @@ export function ConicSensorVisualizer(scene, entityCollection) {
   this._sensorSystem = new SensorSystem({ scene });
   this._hash = {};
   this._entitiesToVisualize = new Map();
+  this._createSensor = createSensor || defaultCreateSensor;
 
   this._onCollectionChanged(
     entityCollection,
@@ -82,7 +99,7 @@ ConicSensorVisualizer.prototype.update = function (time) {
     let show =
       entity.isShowing &&
       entity.isAvailable(time) &&
-      Property.getValueOrDefault(graphics.show, time, true);
+      getPropertyValue(graphics.show, time, true);
 
     let position;
     let orientation;
@@ -120,30 +137,18 @@ ConicSensorVisualizer.prototype.update = function (time) {
     );
 
     if (!defined(sensor)) {
-      sensor = new ConicSensor({
+      sensor = this._createSensor({
         modelMatrix: transform,
-        maximumRadius: Property.getValueOrDefault(
-          graphics.maximumRadius,
-          time,
-          900000.0,
-        ),
-        outerHalfAngle: Property.getValueOrDefault(
-          graphics.outerHalfAngle,
-          time,
-          0.32,
-        ),
-        color: Property.getValueOrDefault(
-          graphics.color,
-          time,
-          Color.WHITE.withAlpha(0.5),
-        ),
-        occlusionMode: Property.getValueOrDefault(
+        maximumRadius: getPropertyValue(graphics.maximumRadius, time, 900000.0),
+        outerHalfAngle: getPropertyValue(graphics.outerHalfAngle, time, 0.32),
+        color: getPropertyValue(graphics.color, time, Color.WHITE.withAlpha(0.5)),
+        occlusionMode: getPropertyValue(
           graphics.occlusionMode,
           time,
           ConicSensorGraphics.OcclusionMode.ELLIPSOID,
         ),
         show: true,
-        id: Property.getValueOrDefault(graphics.id, time, entity.id),
+        id: getPropertyValue(graphics.id, time, entity.id),
       });
       sensor.addTo(this._sensorSystem);
       primitives.add(sensor.primitive);
@@ -171,22 +176,10 @@ ConicSensorVisualizer.prototype.update = function (time) {
 
     // Update dynamic properties.
     sensor.update({
-      maximumRadius: Property.getValueOrDefault(
-        graphics.maximumRadius,
-        time,
-        900000.0,
-      ),
-      outerHalfAngle: Property.getValueOrDefault(
-        graphics.outerHalfAngle,
-        time,
-        0.32,
-      ),
-      color: Property.getValueOrDefault(
-        graphics.color,
-        time,
-        Color.WHITE.withAlpha(0.5),
-      ),
-      occlusionMode: Property.getValueOrDefault(
+      maximumRadius: getPropertyValue(graphics.maximumRadius, time, 900000.0),
+      outerHalfAngle: getPropertyValue(graphics.outerHalfAngle, time, 0.32),
+      color: getPropertyValue(graphics.color, time, Color.WHITE.withAlpha(0.5)),
+      occlusionMode: getPropertyValue(
         graphics.occlusionMode,
         time,
         ConicSensorGraphics.OcclusionMode.ELLIPSOID,
@@ -252,6 +245,11 @@ ConicSensorVisualizer.prototype._onCollectionChanged = function (
       defined(entity.orientation)
     ) {
       entities.set(entity.id, entity);
+      hash[entity.id] = {
+        entity,
+        sensor: undefined,
+        graphics: entity.conicSensor,
+      };
     }
   }
 
@@ -284,3 +282,8 @@ function removeEntity(entity, hash, primitives, _sensorSystem) {
     delete hash[entity.id];
   }
 }
+
+function defaultCreateSensor(options) {
+  return new ConicSensor(options);
+}
+

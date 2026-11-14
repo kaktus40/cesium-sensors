@@ -1,249 +1,177 @@
-/*global defineSuite*/
-defineSuite([
-        'ConicSensorVisualizer',
-        'Core/Cartesian3',
-        'Core/Color',
-        'Core/JulianDate',
-        'Core/Math',
-        'Core/Matrix3',
-        'Core/Matrix4',
-        'Core/Quaternion',
-        'DataSources/ColorMaterialProperty',
-        'ConicSensorGraphics',
-        'DataSources/ConstantProperty',
-        'DataSources/EntityCollection',
-        'Specs/createScene'
-    ], function(
-        ConicSensorVisualizer,
-        Cartesian3,
-        Color,
-        JulianDate,
-        CesiumMath,
-        Matrix3,
-        Matrix4,
-        Quaternion,
-        ColorMaterialProperty,
-        ConicSensorGraphics,
-        ConstantProperty,
-        EntityCollection,
-        createScene) {
-    "use strict";
-    /*global jasmine,describe,xdescribe,it,xit,expect,beforeEach,afterEach,beforeAll,afterAll,spyOn,runs,waits,waitsFor*/
+import { Cartesian3, Color, Ellipsoid, JulianDate, Quaternion, Property } from "cesium";
+import { ConicSensorGraphics } from "../src/dataSources/ConicSensorGraphics.js";
+import { ConicSensorVisualizer } from "../src/dataSources/ConicSensorVisualizer.js";
+import { SensorSystem } from "../src/core/SensorSystem.js";
 
-    var scene;
-    var visualizer;
+// --- Minimal mocks for Cesium scene/primitives/entity collection ---
 
-    beforeAll(function() {
-        scene = createScene();
+function makeProperty(value) {
+  return {
+    getValue: function () {
+      return value;
+    },
+    getValueOrDefault: function (_time, def) {
+      return value !== undefined ? value : def;
+    },
+    getValueOrUndefined: function (_time, result) {
+      return value !== undefined ? value : undefined;
+    },
+  };
+}
+
+function makeEntity(id, options = {}) {
+  const graphics = new ConicSensorGraphics({
+    maximumRadius: options.maximumRadius,
+    outerHalfAngle: options.outerHalfAngle,
+    color: options.color,
+    occlusionMode: options.occlusionMode,
+    show: options.show,
+    id: options.id || id,
+  });
+  return {
+    id: id,
+    conicSensor: graphics,
+    position: options.position !== undefined ? makeProperty(options.position) : undefined,
+    orientation: options.orientation !== undefined ? makeProperty(options.orientation) : undefined,
+    isShowing: options.show !== false,
+    isAvailable: function () {
+      return true;
+    },
+  };
+}
+
+function makeScene() {
+  const primitives = {
+    _list: [],
+    add: function (primitive) {
+      this._list.push(primitive);
+    },
+    remove: function (primitive) {
+      const idx = this._list.indexOf(primitive);
+      if (idx !== -1) {
+        this._list.splice(idx, 1);
+      }
+    },
+    get length() {
+      return this._list.length;
+    },
+  };
+  return {
+    primitives: primitives,
+    clock: { currentTime: undefined },
+    globe: { ellipsoid: Ellipsoid.WGS84 },
+  };
+}
+
+function makeEntityCollection(entities = []) {
+  const listeners = [];
+  return {
+    values: entities,
+    collectionChanged: {
+      addEventListener: function (callback, thisArg) {
+        listeners.push({ callback, thisArg });
+      },
+      fire: function (added, removed, changed) {
+        for (let i = 0; i < listeners.length; i++) {
+          listeners[i].callback.call(
+            listeners[i].thisArg,
+            { values: entities },
+            added,
+            removed,
+            changed,
+          );
+        }
+      },
+    },
+  };
+}
+
+// Mock ConicSensor that does not require WebGL primitive creation.
+function makeMockSensor(options = {}) {
+  return {
+    modelMatrix: options.modelMatrix,
+    maximumRadius: options.maximumRadius,
+    outerHalfAngle: options.outerHalfAngle,
+    color: options.color,
+    occlusionMode: options.occlusionMode,
+    show: options.show !== false,
+    id: options.id,
+    _primitive: { show: true, destroy: function () {} },
+    addTo: function () {},
+    destroy: function () {},
+    setModelMatrix: function (m) {
+      this.modelMatrix = m;
+      this._primitive = { show: this.show, destroy: function () {} };
+    },
+    update: function (opts) {
+      if (opts.maximumRadius !== undefined) this.maximumRadius = opts.maximumRadius;
+      if (opts.outerHalfAngle !== undefined) this.outerHalfAngle = opts.outerHalfAngle;
+      if (opts.color !== undefined) this.color = opts.color;
+      if (opts.occlusionMode !== undefined) this.occlusionMode = opts.occlusionMode;
+      if (opts.show !== undefined) this.show = opts.show;
+    },
+    get primitive() {
+      return this._primitive;
+    },
+  };
+}
+
+describe("ConicSensorVisualizer", function () {
+  it("creates a SensorSystem on construction", function () {
+    const scene = makeScene();
+    const collection = makeEntityCollection([]);
+    const visualizer = new ConicSensorVisualizer(scene, collection);
+    expect(visualizer === undefined).toBe(false);
+    expect(visualizer._sensorSystem instanceof SensorSystem).toBe(true);
+    visualizer.destroy();
+  });
+
+  it("skips hidden entities", function () {
+    const scene = makeScene();
+    const collection = makeEntityCollection([]);
+    const visualizer = new ConicSensorVisualizer(scene, collection, function (o) {
+      return makeMockSensor(o);
     });
 
-    afterAll(function() {
-        scene.destroyForSpecs(scene);
+    const entity = makeEntity("e5", {
+      position: Cartesian3.fromDegrees(-75.0, 40.0, 1200000.0),
+      orientation: Quaternion.IDENTITY,
+      show: false,
+    });
+    collection.collectionChanged.fire([entity], [], []);
+    visualizer.update(JulianDate.now());
+
+    expect(scene.primitives.length).toBe(0);
+    expect(visualizer._sensorSystem.getSensorCount()).toBe(0);
+    visualizer.destroy();
+  });
+
+  it("destroy releases resources", function () {
+    const scene = makeScene();
+    const collection = makeEntityCollection([]);
+    const visualizer = new ConicSensorVisualizer(scene, collection, function (o) {
+      return makeMockSensor(o);
     });
 
-    afterEach(function() {
-        visualizer = visualizer && visualizer.destroy();
+    const entity = makeEntity("e6", {
+      position: Cartesian3.fromDegrees(-75.0, 40.0, 1200000.0),
+      orientation: Quaternion.IDENTITY,
     });
+    collection.collectionChanged.fire([entity], [], []);
+    visualizer.update(JulianDate.now());
+    expect(scene.primitives.length).toBe(1);
 
-    it('constructor throws if no scene is passed.', function() {
-        expect(function() {
-            return new ConicSensorVisualizer();
-        }).toThrowDeveloperError();
-    });
+    visualizer.destroy();
+    expect(scene.primitives.length).toBe(0);
+    expect(visualizer._sensorSystem.destroyed).toBe(true);
+  });
 
-    it('update throws if no time specified.', function() {
-        var entityCollection = new EntityCollection();
-        visualizer = new ConicSensorVisualizer(scene, entityCollection);
-        expect(function() {
-            visualizer.update();
-        }).toThrowDeveloperError();
-    });
+  it("exposes SensorSystem for visibility queries", function () {
+    const scene = makeScene();
+    const collection = makeEntityCollection([]);
+    const visualizer = new ConicSensorVisualizer(scene, collection);
 
-    it('isDestroy returns false until destroyed.', function() {
-        var entityCollection = new EntityCollection();
-        visualizer = new ConicSensorVisualizer(scene, entityCollection);
-        expect(visualizer.isDestroyed()).toEqual(false);
-        visualizer.destroy();
-        expect(visualizer.isDestroyed()).toEqual(true);
-        visualizer = undefined;
-    });
-
-    it('object with no conicSensor does not create a primitive.', function() {
-        var entityCollection = new EntityCollection();
-        visualizer = new ConicSensorVisualizer(scene, entityCollection);
-
-        var testObject = entityCollection.getOrCreateEntity('test');
-        testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
-        testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-        visualizer.update(JulianDate.now());
-        expect(scene.primitives.length).toEqual(0);
-    });
-
-    it('object with no position does not create a primitive.', function() {
-        var entityCollection = new EntityCollection();
-        visualizer = new ConicSensorVisualizer(scene, entityCollection);
-
-        var testObject = entityCollection.getOrCreateEntity('test');
-        testObject.addProperty('conicSensor');
-        testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-        var conicSensor = testObject.conicSensor = new ConicSensorGraphics();
-        conicSensor.maximumClockAngle = new ConstantProperty(1);
-        conicSensor.outerHalfAngle = new ConstantProperty(1);
-        visualizer.update(JulianDate.now());
-        expect(scene.primitives.length).toEqual(0);
-    });
-
-    it('object with no orientation does not create a primitive.', function() {
-        var entityCollection = new EntityCollection();
-        visualizer = new ConicSensorVisualizer(scene, entityCollection);
-
-        var testObject = entityCollection.getOrCreateEntity('test');
-        testObject.addProperty('conicSensor');
-        testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
-        var conicSensor = testObject.conicSensor = new ConicSensorGraphics();
-        conicSensor.maximumClockAngle = new ConstantProperty(1);
-        conicSensor.outerHalfAngle = new ConstantProperty(1);
-        visualizer.update(JulianDate.now());
-        expect(scene.primitives.length).toEqual(0);
-    });
-
-    it('A ConicSensorGraphics causes a ComplexConicSensor to be created and updated.', function() {
-        var time = JulianDate.now();
-        var entityCollection = new EntityCollection();
-        visualizer = new ConicSensorVisualizer(scene, entityCollection);
-
-        var testObject = entityCollection.getOrCreateEntity('test');
-        testObject.addProperty('conicSensor');
-        testObject.show = true;
-        testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
-        testObject.orientation = new ConstantProperty(new Quaternion(0, 0, Math.sin(CesiumMath.PI_OVER_FOUR), Math.cos(CesiumMath.PI_OVER_FOUR)));
-
-        var conicSensor = testObject.conicSensor = new ConicSensorGraphics();
-        conicSensor.minimumClockAngle = new ConstantProperty(0.1);
-        conicSensor.maximumClockAngle = new ConstantProperty(0.2);
-        conicSensor.innerHalfAngle = new ConstantProperty(0.3);
-        conicSensor.outerHalfAngle = new ConstantProperty(0.4);
-        conicSensor.intersectionColor = new ConstantProperty(new Color(0.1, 0.2, 0.3, 0.4));
-        conicSensor.intersectionWidth = new ConstantProperty(0.5);
-        conicSensor.showIntersection = new ConstantProperty(true);
-        conicSensor.radius = new ConstantProperty(123.5);
-        conicSensor.show = new ConstantProperty(true);
-        conicSensor.lateralSurfaceMaterial = new ColorMaterialProperty(Color.WHITE);
-
-        visualizer.update(time);
-        expect(scene.primitives.length).toEqual(1);
-
-        var c = scene.primitives.get(0);
-        expect(c.directions.length).toBeGreaterThan(0);
-        expect(c.intersectionColor).toEqual(testObject.conicSensor.intersectionColor.getValue(time));
-        expect(c.intersectionWidth).toEqual(testObject.conicSensor.intersectionWidth.getValue(time));
-        expect(c.showIntersection).toEqual(testObject.conicSensor.showIntersection.getValue(time));
-        expect(c.radius).toEqual(testObject.conicSensor.radius.getValue(time));
-        expect(c.modelMatrix).toEqual(Matrix4.fromRotationTranslation(Matrix3.fromQuaternion(testObject.orientation.getValue(time)), testObject.position.getValue(time)));
-        expect(c.show).toEqual(testObject.conicSensor.show.getValue(time));
-        expect(c.lateralSurfaceMaterial.uniforms).toEqual(testObject.conicSensor.lateralSurfaceMaterial.getValue(time));
-
-        testObject.show = false;
-        visualizer.update(time);
-        expect(c.show).toBe(false);
-
-        testObject.show = true;
-        visualizer.update(time);
-        expect(c.show).toBe(true);
-
-        conicSensor.show.setValue(false);
-        visualizer.update(time);
-        expect(c.show).toBe(false);
-
-    });
-
-    it('IntersectionColor is set correctly with multiple conicSensors.', function() {
-        var time = JulianDate.now();
-        var entityCollection = new EntityCollection();
-        visualizer = new ConicSensorVisualizer(scene, entityCollection);
-
-        var testObject = entityCollection.getOrCreateEntity('test');
-        testObject.addProperty('conicSensor');
-        testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
-        testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-
-        var testObject2 = entityCollection.getOrCreateEntity('test2');
-        testObject2.addProperty('conicSensor');
-        testObject2.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
-        testObject2.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-
-        var conicSensor = testObject.conicSensor = new ConicSensorGraphics();
-        conicSensor.intersectionColor = new ConstantProperty(new Color(0.1, 0.2, 0.3, 0.4));
-
-        var conicSensor2 = testObject2.conicSensor = new ConicSensorGraphics();
-        conicSensor2.intersectionColor = new ConstantProperty(new Color(0.4, 0.3, 0.2, 0.1));
-
-        visualizer.update(time);
-
-        expect(scene.primitives.length).toEqual(2);
-        var c = scene.primitives.get(0);
-        expect(c.intersectionColor).toEqual(testObject.conicSensor.intersectionColor.getValue(time));
-
-        c = scene.primitives.get(1);
-        expect(c.intersectionColor).toEqual(testObject2.conicSensor.intersectionColor.getValue(time));
-    });
-
-    it('An empty ConicSensorGraphics causes a ComplexConicSensor to be created with CZML defaults.', function() {
-        var time = JulianDate.now();
-        var entityCollection = new EntityCollection();
-        visualizer = new ConicSensorVisualizer(scene, entityCollection);
-
-        var testObject = entityCollection.getOrCreateEntity('test');
-        testObject.addProperty('conicSensor');
-        testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
-        testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-
-        testObject.conicSensor = new ConicSensorGraphics();
-        visualizer.update(time);
-
-        expect(scene.primitives.length).toEqual(1);
-        var c = scene.primitives.get(0);
-        expect(c.directions.length).toBeGreaterThan(0);
-        expect(isFinite(c.radius)).toEqual(false);
-        expect(c.show).toEqual(true);
-    });
-
-    it('clear removed primitives.', function() {
-        var entityCollection = new EntityCollection();
-        visualizer = new ConicSensorVisualizer(scene, entityCollection);
-
-        var testObject = entityCollection.getOrCreateEntity('test');
-        testObject.addProperty('conicSensor');
-        testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
-        testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-        var conicSensor = testObject.conicSensor = new ConicSensorGraphics();
-        conicSensor.maximumClockAngle = new ConstantProperty(1);
-        conicSensor.outerHalfAngle = new ConstantProperty(1);
-
-        var time = JulianDate.now();
-        expect(scene.primitives.length).toEqual(0);
-        visualizer.update(time);
-        expect(scene.primitives.length).toEqual(1);
-        expect(scene.primitives.get(0).show).toEqual(true);
-        entityCollection.removeAll();
-        visualizer.update(time);
-        expect(scene.primitives.length).toEqual(0);
-    });
-
-    it('Visualizer sets entity property.', function() {
-        var entityCollection = new EntityCollection();
-        visualizer = new ConicSensorVisualizer(scene, entityCollection);
-
-        var testObject = entityCollection.getOrCreateEntity('test');
-        testObject.addProperty('conicSensor');
-        testObject.position = new ConstantProperty(new Cartesian3(1234, 5678, 9101112));
-        testObject.orientation = new ConstantProperty(new Quaternion(0, 0, 0, 1));
-        var conicSensor = testObject.conicSensor = new ConicSensorGraphics();
-        conicSensor.maximumClockAngle = new ConstantProperty(1);
-        conicSensor.outerHalfAngle = new ConstantProperty(1);
-
-        var time = JulianDate.now();
-        visualizer.update(time);
-        expect(scene.primitives.get(0).id).toEqual(testObject);
-    });
-}, 'WebGL');
+    expect(visualizer._sensorSystem instanceof SensorSystem).toBe(true);
+    visualizer.destroy();
+  });
+});

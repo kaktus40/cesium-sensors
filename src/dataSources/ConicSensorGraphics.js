@@ -1,10 +1,13 @@
 import {
-  defaultValue,
   defined,
   DeveloperError,
   Event,
   createPropertyDescriptor,
 } from "cesium";
+
+function defaultValue(a, b) {
+  return a !== undefined && a !== null ? a : b;
+}
 
 /**
  * Declarative graphics for a conic sensor attached to a Cesium {@link Entity}.
@@ -24,7 +27,7 @@ import {
  * @param {Property|string} [options.id] Sensor identifier.
  */
 export function ConicSensorGraphics(options) {
-  options = defaultValue(options, defaultValue.EMPTY_OBJECT);
+  options = defaultValue(options, {});
 
   this._maximumRadius = undefined;
   this._maximumRadiusSubscription = undefined;
