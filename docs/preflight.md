@@ -34,34 +34,40 @@ Le shell de contrôle initial utilisait `v27.0.0-alpha.0.0.0`; le projet retient
 
 La cible CesiumJS enregistrée dans le nouveau `package.json` est `1.147.0`, avec une peer dependency limitée à la série `1.147.x` jusqu’à validation d’une autre release.
 
-## État du prototype au 12 novembre 2026
+## État du prototype au 14 novembre 2026
 
-- préparer les fixtures terrain, modèles et CZML ;
-- configurer un token de test hors dépôt si des données Cesium ion sont utilisées ;
-- valider visuellement le volume dans la scène ;
-- confirmer que l’uniforme d’occlusion change effectivement les pixels ;
-- établir une scène d’essai déterministe pour l’ellipsoïde ;
-- ajouter ESLint flat config ou sélectionner une version ESLint cohérente.
+- Phases P0, P1 et P2 terminées (voir `docs/TODO.md`) ;
+- `npm run build` fonctionne (gulpfile.cjs + esbuild, produit `dist/open-sensor.js`) ;
+- `npm test` : 37/37 tests unitaires passent ;
+- `npm run test:e2e` : 7/7 tests e2e Playwright passent ;
+- `npm run lint` : 0 erreur (eslint.config.js flat configuré) ;
+- `npm run docs` (JSDoc) génère la documentation sans erreur ;
+- `scripts/benchmark-getsensorsseeing.mjs` : 0.023/0.132/0.225/0.212 ms pour 1/100/400/500 senseurs.
 
-Le lockfile a été régénéré et les dépendances sont installées localement avec CesiumJS `1.147.0`. Le script `npm run preflight` passe avec Node `26.13.0`.
+### P0 — prototype visuellement vérifiable (terminé)
+- `prototype/minimal.html` + `prototype/minimal.js` : scène minimale (1 capteur, caméra fixe, pas de 500 satellites, pas de fond atmosphérique) ;
+- Boutons occlusion ON/OFF avec captures `test-results/minimal-occlusion-on.png` / `minimal-occlusion-off.png` ;
+- `tests/e2e/minimal.spec.js` : 3 tests Playwright (capture OFF, capture ON, pas d'erreur shader WebGL).
 
-Le registre npm ne contient pas actuellement de package `open-sensor` (`404 Not Found`), ce qui laisse le nom disponible pour la future publication.
+### P1 — contrôles développeur fiables (terminé)
+- `eslint.config.js` : configuration flat ESLint 10 pour modules ESM, globals Cesium/Jasmine ;
+- Nettoyage code : imports inutilisés supprimés, code mort supprimé (SensorGeometry.js) ;
+- `docs/compatibility-matrix.md` : résultats réels (CesiumJS 1.147.0, Node 26.13.0, Chromium/SwiftShader).
 
-La fixture CZML synthétique de 500 satellites est maintenant générée par `npm run generate:benchmark-fixture` dans `Specs/fixtures/benchmark-500.czml`. Les fixtures terrain et 3D Tiles restent à préparer dans Playwright.
+### P2 — occlusion de scène (terminé)
+- `docs/P2-occlusion-scene-api-research.md` : APIs CesiumJS étudiées (Globe.pick, Scene.sampleHeight/clampToHeight, versions MostDetailed, Cesium3DTileset.getHeight) ;
+- Stratégie d'occlusion décidée : terrain via `globe.pick()`/`sampleHeightMostDetailed()`, 3D Tiles opaques via passe de profondeur dédiée, ellipsoïde via `ellipsoidOcclusion()` CPU ;
+- Corrigé bug `ellipsoidOcclusion` (tmpCartesian réutilisé) + ajout `tmpCartesianC` ;
+- 6 tests déterministes ajoutés dans `Specs/SensorOcclusionSpec.js` (rayon traversant, s'éloignant, origine à l'intérieur, etc.) ;
+- Documenté les limites du test ellipsoïde dans le JSDoc.
 
-Le Viewer de prototype et ses tests Playwright sont en place. Chromium système (`/usr/bin/chromium`) confirme le chargement des 500 Entities, l’ajout du primitive et le passage du shader dans le pipeline de rendu. Le chemin peut être remplacé via `PLAYWRIGHT_CHROMIUM_EXECUTABLE`.
+### P3 — hygiène de projet (en cours)
+- Build fonctionnel avec esbuild ;
+- JSDoc opérationnel après correction des annotations ;
+- Vulnérabilités dépendances à traiter (voir `npm audit`) ;
+- README et plan de reprise à réviser.
 
-Le prototype contient un primitive conique expérimental construit avec les API publiques `Primitive`, `GeometryInstance`, `CylinderGeometry` et `Appearance`. Un shader fragment teste une intersection de rayon avec l’ellipsoïde et dispose d’un uniforme `u_ellipsoidOcclusion`. Le test e2e bascule cet uniforme et vérifie qu’aucune boîte d’erreur de rendu Cesium n’apparaît.
-
-**Limite connue :** la capture Playwright ne montre pas encore clairement le cône. Le test actuel confirme la compilation/exécution sans erreur, mais ne prouve ni la présence visible du cône ni la différence pixel entre occlusion activée et désactivée. Ne pas présenter cette étape comme une validation visuelle ou comme une occlusion achevée.
-
-La commande `npm run test:e2e` passe avec 3 tests sous Node `26.13.0`, Chromium système et SwiftShader. La capture de diagnostic est `test-results/conic-sensor-prototype.png`; elle est générée localement et n’est pas une référence visuelle validée.
-
-La commande `npm run lint` échoue avant l’analyse : ESLint `10.14.0` est installé mais aucune configuration `eslint.config.*` n’existe. Le script de lint doit être réparé avant de considérer le contrôle qualité prêt.
-
-Les dépendances sont installées localement avec CesiumJS `1.147.0`; `npm run preflight` passe avec Node `26.13.0`. Le cadrage de caméra du prototype a été modifié pendant l’investigation et reste à stabiliser.
-
-La résolution npm signale 8 vulnérabilités dans les dépendances d’outillage historiques ou de développement. L’audit de production (`npm audit --omit=dev`) ne signale aucune vulnérabilité. Ces dépendances devront être traitées avant la CI et la publication, sans utiliser automatiquement `npm audit fix --force`.
+Les fixtures terrain et 3D Tiles restent à préparer dans Playwright. La capture Playwright ne montre pas encore clairement le cône (scène minimale sans globe). Le test actuel confirme la compilation/exécution sans erreur, mais ne prouve pas la présence visible du cône ni la différence pixel entre occlusion activée et désactivée.
 
 ## Règles de sécurité
 

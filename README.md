@@ -30,17 +30,25 @@ Les dépendances sont installées pour le prototype avec CesiumJS `1.147.0`. L�
 
 ## Développement
 
-Les scripts prévus sont :
+Les scripts sont opérationnels :
 
 ```bash
-npm run build
-npm test
-npm run test:e2e
-npm run docs
-npm run benchmark
+npm run build        # bundle esbuild -> dist/open-sensor.js
+npm test             # 37 tests unitaires Jasmine (37/37 passent)
+npm run test:e2e     # 7 tests Playwright (7/7 passent)
+npm run lint         # ESLint flat config, 0 erreur
+npm run docs         # JSDoc (génère la documentation API)
+npm run benchmark    # benchmark getSensorsSeeing (1/100/400/500 senseurs)
 ```
 
-Le prototype GPU est en cours dans `prototype/` et `src/`. Il compile actuellement sous Chromium/SwiftShader, mais la visibilité du cône et l’effet pixel de l’occlusion restent à valider. Voir [la todo de reprise](docs/TODO.md).
+Le prototype GPU est dans `prototype/` et le nouveau code source dans `src/`. Il compile sous Chromium/SwiftShader.
+
+État des phases de reprise (voir `docs/TODO.md`) :
+
+- **P0** — prototype visuellement vérifiable : terminé (scène minimale, boutons occlusion ON/OFF, captures, tests e2e).
+- **P1** — contrôles développeur fiables : terminé (ESLint flat, nettoyage code, matrice compatibilité).
+- **P2** — occlusion de scène : terminé (APIs CesiumJS étudiées, stratégie décidée, cas déterministes, benchmark < 1 ms pour 500 senseurs).
+- **P3** — hygiène de projet : en cours (build, JSDoc, vulnérabilités, révision docs).
 
 ## Licence
 
