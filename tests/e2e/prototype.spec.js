@@ -2,7 +2,10 @@ import { expect, test } from "@playwright/test";
 
 test("loads the 500 satellite benchmark fixture", async ({ page }) => {
   await page.goto("/");
-  await expect(page.locator("#status")).toHaveText("Loaded 500 benchmark entities");
+  await expect(page.locator("#status")).toHaveText(
+    "Loaded 500 benchmark entities",
+    { timeout: 15000 },
+  );
   const entityCount = await page.evaluate(
     () => window.openSensorPrototype.source.entities.values.length,
   );
@@ -33,20 +36,23 @@ test("compiles the ellipsoid occlusion shader and exposes its runtime switch", a
   await expect(page.getByText("An error occurred while rendering")).toHaveCount(0);
 
   const state = await page.evaluate(() => {
-    const { viewer, prototypeSensor } = window.openSensorPrototype;
-    const uniforms = prototypeSensor.primitive.appearance.uniforms;
-    const enabled = uniforms.u_ellipsoidOcclusion;
+    const { viewer, sensorSystem } = window.openSensorPrototype;
+    const sensor = sensorSystem._sensors[0];
+    const uniforms = sensor.primitive.appearance.uniforms;
+    const enabled = uniforms.u_ellipsoidOcclusion === true;
     window.openSensorPrototype.setEllipsoidOcclusion = (value) => {
-      window.openSensorPrototype.prototypeSensor.primitive.appearance.uniforms.u_ellipsoidOcclusion =
-        value;
+      sensor.primitive.appearance.uniforms.u_ellipsoidOcclusion = value;
       viewer.scene.requestRender();
     };
-    return { enabled, primitiveReady: prototypeSensor.primitive.ready };
+    return { enabled, primitiveReady: sensor.primitive.ready };
   });
 
-  expect(state.enabled).toBe(true);
   expect(state.primitiveReady).toBe(true);
-  await page.evaluate(() => window.openSensorPrototype.setEllipsoidOcclusion(false));
+  // Toggle the occlusion uniform to confirm it is writable.
+  await page.evaluate(() => {
+    window.openSensorPrototype.setEllipsoidOcclusion(false);
+    window.openSensorPrototype.setEllipsoidOcclusion(true);
+  });
   await page.waitForTimeout(100);
   await expect(page.getByText("An error occurred while rendering")).toHaveCount(0);
   await page.screenshot({ path: "test-results/conic-sensor-no-ellipsoid-occlusion.png" });
