@@ -48,6 +48,10 @@
 - [ ] Résoudre les vulnérabilités de dépendances d'outillage sans mise à jour forcée non examinée. → 27 vulnérabilités en devDependencies, 0 en production (`npm audit --omit=dev`); non corrigées automatiquement (pas de `npm audit fix --force`)
 - [x] Réviser le README, le pré-vol et le plan de reprise lorsque les résultats P0/P2 changent les décisions. → README.md et docs/preflight.md révisés; plan de reprise conservé comme vision long terme
 
+## Prochain point (plan de reprise, section 16)
+
+- [ ] Porter ConicSensorGraphics et un visualizer minimal (point 6 de la séquence recommandée ; début de la Phase 2 — portage du modèle de données Entity/CZML)
+
 ## Commandes de reprise
 
 ```bash
