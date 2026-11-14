@@ -63,6 +63,83 @@ describe("SensorOcclusion.ellipsoidOcclusion", function() {
     expect(result.occluded).toBe(true);
     expect(result.t).toBe(1.0);
   });
+
+  it("matches fragment shader ellipsoid occlusion logic on equivalent cases", function() {
+    // Reproduit exactement le fragment shader de ConicSensor.js (lignes 105-119).
+    function simulateShaderOcclusion(originWC, pointWC, inverseRadii, enabled) {
+      if (!enabled) {
+        return { occluded: false, discard: false };
+      }
+      const originScaled = Cartesian3.multiplyComponents(
+        inverseRadii,
+        originWC,
+        new Cartesian3(),
+      );
+      const pointScaled = Cartesian3.multiplyComponents(
+        inverseRadii,
+        pointWC,
+        new Cartesian3(),
+      );
+      const ray = Cartesian3.subtract(pointScaled, originScaled, new Cartesian3());
+
+      const a = Cartesian3.dot(ray, ray);
+      const b = 2.0 * Cartesian3.dot(originScaled, ray);
+      const c = Cartesian3.dot(originScaled, originScaled) - 1.0;
+      const discriminant = b * b - 4.0 * a * c;
+
+      // Shader: if (discriminant >= 0.0 && a > 0.0) { t = ...; if (t > 0.00001 && t < 0.99999) discard; }
+      let t = null;
+      if (discriminant >= 0.0 && a > 0.0) {
+        const sqrtDisc = Math.sqrt(discriminant);
+        t = (-b - sqrtDisc) / (2.0 * a);
+      }
+      const shaderDiscard =
+        discriminant >= 0.0 &&
+        a > 0.0 &&
+        t !== null &&
+        t > 0.00001 &&
+        t < 0.99999;
+
+      // Shader: if (dot(pointScaled, pointScaled) < 1.0) discard;
+      const pointInside = Cartesian3.dot(pointScaled, pointScaled) < 1.0;
+
+      return { occluded: shaderDiscard || pointInside, discard: shaderDiscard };
+    }
+
+    const cases = [
+      // [originLat, originLon, originAlt, targetLat, targetLon, targetAlt, expectedOccluded]
+      [-75.0, 40.0, 1200000.0, -75.0, 40.0, 1300000.0, false], // outside to outside, up
+      [-75.0, 40.0, 1200000.0, -75.0, 40.0, -100.0, true], // target inside
+      [-75.0, 40.0, 1200000.0, -75.0, 40.0, 2000000.0, false], // entirely outside
+      [-75.0, 40.0, 1200000.0, 75.0, -40.0, 1200000.0, true], // through Earth
+      [-75.0, 40.0, -100.0, -75.0, 40.0, -200.0, true], // both inside
+    ];
+
+    for (let i = 0; i < cases.length; i++) {
+      const [olat, olon, oalt, tlat, tlon, talt, expected] = cases[i];
+      const originWC = Cartesian3.fromDegrees(olat, olon, oalt);
+      const pointWC = Cartesian3.fromDegrees(tlat, tlon, talt);
+
+      const cpu = ellipsoidOcclusion(originWC, pointWC, inverseRadii, true);
+      const shader = simulateShaderOcclusion(
+        originWC,
+        pointWC,
+        inverseRadii,
+        true,
+      );
+
+      expect(cpu.occluded).toBe(
+        expected,
+        `case ${i}: CPU ${cpu.occluded} vs expected ${expected}`,
+      );
+      expect(shader.occluded).toBe(
+        expected,
+        `case ${i}: shader ${shader.occluded} vs expected ${expected}`,
+      );
+      // CPU et shader doivent s'accorder entre eux.
+      expect(cpu.occluded).toBe(shader.occluded, `case ${i}: CPU/shader mismatch`);
+    }
+  });
 });
 
 describe("SensorOcclusion.ellipsoidRayOcclusion", function() {
