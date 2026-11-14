@@ -35,6 +35,30 @@ test.describe("scène minimale — occlusion ellipsoïde", () => {
     expect(uniforms).toBe(true);
   });
 
+  test("occlusion produit une différence visuelle détectable (comparaison pixel)", async ({
+    page,
+  }) => {
+    await page.goto("/prototype/minimal.html");
+    await page.waitForTimeout(1000);
+
+    await page.click("#btn-occlusion-off");
+    await page.waitForTimeout(1000);
+    const offBuffer = await page.screenshot();
+
+    await page.click("#btn-occlusion-on");
+    await page.waitForTimeout(1000);
+    const onBuffer = await page.screenshot();
+
+    // Les deux captures doivent différer (l'occlusion change le rendu).
+    let diffPixels = 0;
+    for (let i = 0; i < offBuffer.length; i++) {
+      if (offBuffer[i] !== onBuffer[i]) {
+        diffPixels++;
+      }
+    }
+    expect(diffPixels).toBeGreaterThan(0);
+  });
+
   test("pas d'erreur de shader WebGL dans la scène minimale", async ({ page }) => {
     const shaderErrors = [];
     page.on("console", (message) => {
