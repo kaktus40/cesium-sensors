@@ -175,7 +175,7 @@ export class ConicSensor {
 
   /**
    * Register this sensor with a SensorSystem.
-   * @param {import("./core/SensorSystem.js").SensorSystem} sensorSystem
+   * @param {SensorSystem} sensorSystem - The SensorSystem to register with.
    */
   addTo(sensorSystem) {
     if (this._sensorSystem) {
