@@ -81,3 +81,12 @@ body,
   max-width: 420px;
   white-space: pre-wrap;
 }
+
+#results {
+  padding: 8px 12px;
+  background: rgb(0 0 0 / 70%);
+  border-radius: 4px;
+  max-width: 420px;
+  white-space: pre-wrap;
+  margin-top: 8px;
+}

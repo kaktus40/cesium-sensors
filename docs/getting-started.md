@@ -102,7 +102,104 @@ Créez un `Viewer` Cesium, un `SensorSystem`, puis ajoutez un `ConicSensor` :
 
 Ouvrez ce fichier avec un serveur local (ex: `npx vite`) et consultez la console / la zone `#results`.
 
-## 3. Requête de visibilité `getSensorsSeeing`
+## 3. Imagerie et terrain (ellipsoïde + surface)
+
+Par défaut, le globe Cesium utilise un ellipsoïde nu. Pour ajouter une imagerie et du relief :
+
+```js
+import {
+  Cartesian3,
+  Color,
+  CesiumTerrainProvider,
+  GeographicTilingScheme,
+  TileMapServiceImageryProvider,
+  buildModuleUrl,
+  Viewer,
+} from "cesium";
+
+const viewer = new Viewer("cesiumContainer", {
+  baseLayer: false,           // on fournit notre propre imagerie
+  baseLayerPicker: false,
+  geocoder: false,
+  // ...
+});
+
+// --- Imagerie : Natural Earth II (intégrée à Cesium, pas de clé API) ---
+const naturalEarth = new TileMapServiceImageryProvider({
+  url: buildModuleUrl("Assets/Textures/NaturalEarthII"),
+  tilingScheme: new GeographicTilingScheme(),
+  maximumLevel: 5,
+});
+viewer.imageryLayers.addImageryProvider(naturalEarth);
+
+// --- Terrain : fournisseur de tuiles de terrain ---
+// Remplacez l'URL par votre propre serveur de tuiles (Quantized Mesh ou
+// Height Map : Cesium ion, GeoServer, etc.).
+const terrainProvider = new CesiumTerrainProvider({
+  url: "https://assets.agi.com/stk-terrain/v1/tilesets/world/tiles",
+  requestVertexNormals: true,
+
+  // Politique de chargement : ignorer le niveau 0 (trop gros, peu détaillé)
+  // et ne demander que les niveaux à partir de 1.
+  minimumLevel: 1,
+  maximumLevel: 14,
+});
+viewer.terrainProvider = terrainProvider;
+
+viewer.scene.globe.show = true;
+```
+
+### Politique de chargement des tuiles de terrain
+
+`minimumLevel` évite que Cesium ne tente de charger les tuiles du niveau 0
+(qui couvrent la planète entière et sont lourdes). Vous pouvez aussi restreindre
+la zone d'intérêt avec `rectangle` sur le provider pour ne charger que les tuiles
+les plus proches de votre zone de travail.
+
+```js
+const terrainProvider = new CesiumTerrainProvider({
+  url: "https://assets.agi.com/stk-terrain/v1/tilesets/world/tiles",
+  minimumLevel: 1,
+  maximumLevel: 14,
+  // Optionnel : restreindre à un rectangle géographique
+  // rectangle: Cesium.Rectangle.fromDegrees(-10, 40, 10, 50),
+});
+```
+
+### Configuration Vite pour servir les assets Cesium
+
+Les assets statiques de Cesium (Natural Earth II, shaders, etc.) sont dans
+`node_modules/cesium/Build/Cesium/Assets/`. Pour que Vite les serve, créez un
+`vite.config.js` à la racine :
+
+```js
+import { defineConfig } from "vite";
+import path from "path";
+import fs from "fs";
+
+export default defineConfig({
+  server: {
+    port: 5173,
+    configureServer: (server) => {
+      server.middlewares.use("/Assets/", (req, res, next) => {
+        const urlPath = req.url.replace(/^\/Assets\//, "");
+        const filePath = path.join(
+          "node_modules/cesium/Build/Cesium/Assets",
+          urlPath
+        );
+        if (fs.existsSync(filePath)) {
+          res.sendFile(filePath);
+        } else {
+          res.status(404).end();
+        }
+      });
+    },
+  },
+});
+```
+
+Sans cette configuration, `buildModuleUrl("Assets/Textures/NaturalEarthII")`
+génère des URLs que Vite ne sait pas servir (404 sur les tuiles).
 
 ```js
 const views = await sensorSystem.getSensorsSeeing(target, {
@@ -179,7 +276,7 @@ const views = await sensorSystem.getSensorsSeeing(target, {
 });
 ```
 
-L'occlusion par modèles 3D Tiles opaques nécessite une passe de profondeur dédiée (non encore implémentée dans `rayVs3DTiles`).
+L'occlusion par modèles 3D Tiles opaques utilise une passe de profondeur dédiée (`DepthPass`, `rayVs3DTiles`) pour lire la profondeur des tuiles le long du rayon.
 
 ## Référence
 

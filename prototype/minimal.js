@@ -1,13 +1,16 @@
 import {
   Cartesian3,
   Color,
+  CesiumTerrainProvider,
+  GeographicTilingScheme,
   HeadingPitchRange,
+  TileMapServiceImageryProvider,
   Transforms,
   Viewer,
+  UrlTemplateImageryProvider,
+  buildModuleUrl,
 } from "cesium";
-import "cesium/Build/Cesium/Widgets/widgets.css";
 import "./style.css";
-import { ConicSensor } from "../src/ConicSensor.js";
 
 window.CESIUM_BASE_URL = "/node_modules/cesium/Build/Cesium/";
 
@@ -28,40 +31,39 @@ const viewer = new Viewer("cesiumContainer", {
   fog: false,
 });
 
-viewer.scene.globe.show = false;
-viewer.scene.backgroundColor = Color.fromCssColorString("#0a0a12");
+const statusEl = document.getElementById("status");
+const resultsEl = document.getElementById("results");
 
-// Capteur unique, orienté verticalement (radiale).
-const sensorOrigin = Cartesian3.fromDegrees(-75.0, 40.0, 1200000.0);
-const sensorMatrix = Transforms.eastNorthUpToFixedFrame(sensorOrigin);
-
-const sensor = new ConicSensor({
-  modelMatrix: sensorMatrix,
-  maximumRadius: 900000.0,
-  outerHalfAngle: 0.32,
-  color: Color.CYAN.withAlpha(0.45),
-  id: "sensor-minimal",
-});
-viewer.scene.primitives.add(sensor.primitive);
-
-viewer.camera.lookAt(
-  sensorOrigin,
-  new HeadingPitchRange(0.0, 0.0, 1600000.0),
-);
-
-document.querySelector("#status").textContent =
-  "Scène minimale — 1 capteur, caméra fixe, pas de fond atmosphérique";
-
-document.querySelector("#btn-occlusion-on").addEventListener("click", () => {
-  sensor.primitive.appearance.uniforms.u_ellipsoidOcclusion = true;
-  viewer.scene.requestRender();
-  document.querySelector("#status").textContent = "Occlusion ellipsoïde : activée";
+// --- Imagerie : Natural Earth II (intégrée à Cesium, pas de clé API) ---
+const naturalEarth = new TileMapServiceImageryProvider({
+  url: buildModuleUrl("Assets/Textures/NaturalEarthII"),
+  tilingScheme: new GeographicTilingScheme(),
+  maximumLevel: 5,
 });
 
-document.querySelector("#btn-occlusion-off").addEventListener("click", () => {
-  sensor.primitive.appearance.uniforms.u_ellipsoidOcclusion = false;
-  viewer.scene.requestRender();
-  document.querySelector("#status").textContent = "Occlusion ellipsoïde : désactivée";
+viewer.imageryLayers.addImageryProvider(naturalEarth);
+
+// --- Terrain : fournisseur de tuiles de terrain ---
+// Remplacez l'URL ci-dessous par votre propre serveur de tuiles terrain
+// (format Quantized Mesh ou Height Map, ex: Cesium ion, GeoServer, etc.).
+const terrainProvider = new CesiumTerrainProvider({
+  url: "https://assets.agi.com/stk-terrain/v1/tilesets/world/tiles",
+  requestVertexNormals: true,
+  // Politique de chargement : ignorer le niveau 0 (trop gros, peu détaillé)
+  // et ne demander que les niveaux à partir de 1.
+  minimumLevel: 1,
+  maximumLevel: 14,
 });
 
-window.openSensorMinimal = { viewer, sensor };
+viewer.terrainProvider = terrainProvider;
+
+viewer.scene.globe.show = true;
+viewer.scene.backgroundColor = Color.fromCssColorString("#101923");
+
+statusEl.textContent = "Imagerie Natural Earth + terrain activés";
+
+window.openSensorMinimal = {
+  viewer,
+  terrainProvider,
+  imageryLayersCount: viewer.imageryLayers.length,
+};

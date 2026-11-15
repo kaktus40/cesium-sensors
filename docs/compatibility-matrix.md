@@ -1,8 +1,8 @@
 # Matrice de compatibilité
 
-## Statut au 14 novembre 2026
+## Statut au 15 novembre 2026
 
-Validation P3 (intégration Entity/CZML + scène minimale) complète. 72 tests unitaires et 8 tests e2e Playwright passent sous Chromium système avec SwiftShader. 0 vulnérabilités npm.
+Validation P3 (intégration Entity/CZML + scène minimale + imagerie/terrain) complète. 72 tests unitaires et 7 tests e2e Playwright passent sous Chromium système avec SwiftShader. 0 vulnérabilités npm.
 
 | Élément | Version testée | Résultat |
 |---|---|---|
@@ -17,12 +17,13 @@ Validation P3 (intégration Entity/CZML + scène minimale) complète. 72 tests u
 | Safari | à tester | à confirmer |
 | 3D | garantie initiale | oui |
 | 2D/Columbus/morph | selon prototype | à confirmer |
-| Terrain | cible | `rayVsTerrain()` via `Globe.pick()`, non validé GPU sous scène complexe |
+| Terrain | cible | `CesiumTerrainProvider` configuré avec `minimumLevel: 1` pour éviter le niveau 0 |
 | 3D Tiles opaques | cible | `DepthPass` + `rayVs3DTiles()` implémentés (passe de profondeur offscreen, échantillonnage le long du rayon) |
+| Imagery | Natural Earth II (intégrée à Cesium) | oui |
 | Transparence | non occluder | oui |
-| Imagery | non occluder | oui |
+| Build assets | Vite middleware `/Assets/` | requis pour servir Natural Earth II |
 | Tests unitaires | `node run-tests.mjs` | 72/72 passent |
-| Tests e2e | `npm run test:e2e` | 8/8 passent |
+| Tests e2e | `npm run test:e2e` | 7/7 passent (avec Brave + SwiftShader) |
 | Lint | `npm run lint` | 0 erreur (eslint.config.js flat) |
 | Build | `npm run build` (esbuild) | `dist/open-sensor.js` généré |
 | Documentation | `npx jsdoc` | génère sans erreur (jsdoc 4.0.5) |

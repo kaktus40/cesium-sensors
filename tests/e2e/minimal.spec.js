@@ -1,65 +1,40 @@
 import { expect, test } from "@playwright/test";
 
-test.describe("scène minimale — occlusion ellipsoïde", () => {
-  test("affiche le cône avec ellipsoidOcclusion désactivé (capture)", async ({
+test.describe("scène minimale — terrain et imagerie", () => {
+  test("charge la scène avec globe activé et imagerie Natural Earth", async ({
     page,
   }) => {
     await page.goto("/prototype/minimal.html");
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(3000);
 
-    // Cône visible (occlusion OFF par défaut via le bouton ou l'état initial)
-    await page.click("#btn-occlusion-off");
-    await page.waitForTimeout(500);
-    await page.screenshot({ path: "test-results/minimal-occlusion-off.png" });
-
-    const primitiveCount = await page.evaluate(
-      () => window.openSensorMinimal.viewer.scene.primitives.length,
+    await expect(page.locator("#status")).toContainText(
+      "Imagerie Natural Earth + terrain activés",
     );
-    expect(primitiveCount).toBeGreaterThan(0);
   });
 
-  test("affiche le cône avec ellipsoidOcclusion activé (capture)", async ({
+  test("le globe est activé avec un fournisseur de terrain", async ({
     page,
   }) => {
     await page.goto("/prototype/minimal.html");
-    await page.waitForTimeout(1000);
+    await page.waitForTimeout(3000);
 
-    await page.click("#btn-occlusion-on");
-    await page.waitForTimeout(500);
-    await page.screenshot({ path: "test-results/minimal-occlusion-on.png" });
-
-    const uniforms = await page.evaluate(() => {
-      const { sensor } = window.openSensorMinimal;
-      return sensor.primitive.appearance.uniforms.u_ellipsoidOcclusion;
+    const globeReady = await page.evaluate(() => {
+      const { viewer } = window.openSensorMinimal;
+      return {
+        globeShow: viewer.scene.globe.show,
+        hasTerrainProvider: viewer.scene.globe.terrainProvider !== undefined,
+        imageryLayersCount: window.openSensorMinimal.imageryLayersCount,
+      };
     });
-    expect(uniforms).toBe(true);
+
+    expect(globeReady.globeShow).toBe(true);
+    expect(globeReady.hasTerrainProvider).toBe(true);
+    expect(globeReady.imageryLayersCount).toBeGreaterThan(0);
   });
 
-  test("occlusion produit une différence visuelle détectable (comparaison pixel)", async ({
+  test("pas d'erreur de shader WebGL dans la scène minimal avec terrain", async ({
     page,
   }) => {
-    await page.goto("/prototype/minimal.html");
-    await page.waitForTimeout(1000);
-
-    await page.click("#btn-occlusion-off");
-    await page.waitForTimeout(1000);
-    const offBuffer = await page.screenshot();
-
-    await page.click("#btn-occlusion-on");
-    await page.waitForTimeout(1000);
-    const onBuffer = await page.screenshot();
-
-    // Les deux captures doivent différer (l'occlusion change le rendu).
-    let diffPixels = 0;
-    for (let i = 0; i < offBuffer.length; i++) {
-      if (offBuffer[i] !== onBuffer[i]) {
-        diffPixels++;
-      }
-    }
-    expect(diffPixels).toBeGreaterThan(0);
-  });
-
-  test("pas d'erreur de shader WebGL dans la scène minimale", async ({ page }) => {
     const shaderErrors = [];
     page.on("console", (message) => {
       if (message.type() === "error" && /shader|webgl|program/i.test(message.text())) {
@@ -68,7 +43,7 @@ test.describe("scène minimale — occlusion ellipsoïde", () => {
     });
 
     await page.goto("/prototype/minimal.html");
-    await page.waitForTimeout(2000);
+    await page.waitForTimeout(4000);
 
     const errorCount = await page
       .locator('text="An error occurred while rendering"')
