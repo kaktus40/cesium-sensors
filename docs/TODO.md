@@ -6,8 +6,8 @@
 
 - [x] Stabiliser la caméra et les axes locaux. Vérifier la convention choisie (axe du cône, base et pointe) en affichant un volume opaque/non occulté et une grille de repère.
 - [x] Isoler une scène minimale : retirer les 500 satellites, le fond atmosphérique et les couches non nécessaires; placer un capteur et une caméra fixe. → `prototype/minimal.html` + `prototype/minimal.js`
-- [x] Ajouter imagerie Natural Earth II et terrain (`CesiumTerrainProvider` avec `minimumLevel: 1`) à la scène minimale.
-- [x] Configurer Vite (`vite.config.js`) pour servir `/Assets/` depuis `node_modules/cesium/Build/Cesium/Assets/` (nécessaire pour `buildModuleUrl("Assets/Textures/NaturalEarthII")`).
+- [x] Ajouter imagerie OpenStreetMap (URL directe) et terrain (`CesiumTerrainProvider` avec `minimumLevel: 1`) à la scène minimale. Caméra au niveau du sol (Paris, 5 km).
+- [x] Configurer Vite (`vite.config.js`) pour servir `/Assets/` depuis `node_modules/cesium/Build/Cesium/Assets/` (conservé pour compatibilité assets Cesium locaux).
 - [x] Confirmer que le primitive est dans le frustum et que ses sommets sont bien positionnés en coordonnées monde. Vérifié via `primitiveCount > 0` dans les tests e2e.
 - [x] Produire une capture où le cône est visiblement rendu avec `ellipsoidOcclusion: false`. → `test-results/minimal-occlusion-off.png`
 - [x] Faire une scène reproductible avec une partie du cône derrière l'ellipsoïde; comparer l'image avec occlusion activée et désactivée. → boutons ON/OFF + `test-results/minimal-occlusion-on.png` / `minimal-occlusion-off.png`

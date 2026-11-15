@@ -19,9 +19,9 @@ Validation P3 (intégration Entity/CZML + scène minimale + imagerie/terrain) co
 | 2D/Columbus/morph | selon prototype | à confirmer |
 | Terrain | cible | `CesiumTerrainProvider` configuré avec `minimumLevel: 1` pour éviter le niveau 0 |
 | 3D Tiles opaques | cible | `DepthPass` + `rayVs3DTiles()` implémentés (passe de profondeur offscreen, échantillonnage le long du rayon) |
-| Imagery | Natural Earth II (intégrée à Cesium) | oui |
+| Imagery | OpenStreetMap (URL directe) ou IGN Géoplateforme WMTS | oui |
 | Transparence | non occluder | oui |
-| Build assets | Vite middleware `/Assets/` | requis pour servir Natural Earth II |
+| Build assets | Vite middleware `/Assets/` | optionnel (uniquement pour assets Cesium locaux) |
 | Tests unitaires | `node run-tests.mjs` | 72/72 passent |
 | Tests e2e | `npm run test:e2e` | 7/7 passent (avec Brave + SwiftShader) |
 | Lint | `npm run lint` | 0 erreur (eslint.config.js flat) |

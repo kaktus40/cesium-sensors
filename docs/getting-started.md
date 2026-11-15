@@ -106,47 +106,76 @@ Ouvrez ce fichier avec un serveur local (ex: `npx vite`) et consultez la console
 
 Par défaut, le globe Cesium utilise un ellipsoïde nu. Pour ajouter une imagerie et du relief :
 
+### Option A : OpenStreetMap (recommandé, pas de clé)
+
 ```js
 import {
   Cartesian3,
   Color,
   CesiumTerrainProvider,
-  GeographicTilingScheme,
-  TileMapServiceImageryProvider,
-  buildModuleUrl,
+  HeadingPitchRange,
+  OpenStreetMapImageryProvider,
+  Transforms,
   Viewer,
 } from "cesium";
 
 const viewer = new Viewer("cesiumContainer", {
-  baseLayer: false,           // on fournit notre propre imagerie
+  baseLayer: false,
   baseLayerPicker: false,
   geocoder: false,
-  // ...
+  skyBox: false,
+  skyAtmosphere: false,
+  fog: false,
 });
 
-// --- Imagerie : Natural Earth II (intégrée à Cesium, pas de clé API) ---
-const naturalEarth = new TileMapServiceImageryProvider({
-  url: buildModuleUrl("Assets/Textures/NaturalEarthII"),
-  tilingScheme: new GeographicTilingScheme(),
-  maximumLevel: 5,
+// OpenStreetMap (URL directe, pas de clé, pas de proxy CORS)
+const osm = new OpenStreetMapImageryProvider({
+  url: "https://tile.openstreetmap.org/",
+  maximumLevel: 19,
+  credit: "OpenStreetMap contributors",
 });
-viewer.imageryLayers.addImageryProvider(naturalEarth);
+viewer.imageryLayers.addImageryProvider(osm);
 
-// --- Terrain : fournisseur de tuiles de terrain ---
-// Remplacez l'URL par votre propre serveur de tuiles (Quantized Mesh ou
-// Height Map : Cesium ion, GeoServer, etc.).
+// Terrain (optionnel)
 const terrainProvider = new CesiumTerrainProvider({
   url: "https://assets.agi.com/stk-terrain/v1/tilesets/world/tiles",
   requestVertexNormals: true,
-
-  // Politique de chargement : ignorer le niveau 0 (trop gros, peu détaillé)
-  // et ne demander que les niveaux à partir de 1.
   minimumLevel: 1,
   maximumLevel: 14,
 });
 viewer.terrainProvider = terrainProvider;
 
 viewer.scene.globe.show = true;
+
+// Caméra au niveau du sol (ex: Paris, 5 km d'altitude)
+const origin = Cartesian3.fromDegrees(2.3522, 48.8566, 5000);
+viewer.camera.setView({
+  destination: origin,
+  orientation: {
+    heading: 0.0,
+    pitch: CesiumMath.toRadians(-45.0),
+    roll: 0.0,
+  },
+});
+```
+
+### Option B : IGN Géoplateforme (WMTS, France)
+
+L'IGN fournit un service WMTS public sans clé (`https://data.geopf.fr/wmts`). Exemple avec l'orthophoto :
+
+```js
+import { WebMapTileServiceImageryProvider, Credit } from "cesium";
+
+const ignOrtho = new WebMapTileServiceImageryProvider({
+  url: "https://data.geopf.fr/wmts",
+  layer: "ORTHOIMAGERY.ORTHOPHOTOS",
+  style: "normal",
+  format: "image/jpeg",
+  tileMatrixSetID: "PM",
+  maximumLevel: 19,
+  credit: new Credit("IGN Géoplateforme"),
+});
+viewer.imageryLayers.addImageryProvider(ignOrtho);
 ```
 
 ### Politique de chargement des tuiles de terrain
@@ -166,11 +195,10 @@ const terrainProvider = new CesiumTerrainProvider({
 });
 ```
 
-### Configuration Vite pour servir les assets Cesium
+### Configuration Vite pour servir les assets Cesium (optionnel)
 
-Les assets statiques de Cesium (Natural Earth II, shaders, etc.) sont dans
-`node_modules/cesium/Build/Cesium/Assets/`. Pour que Vite les serve, créez un
-`vite.config.js` à la racine :
+Si vous utilisez des assets statiques de Cesium (shaders, textures intégrées),
+créez un `vite.config.js` à la racine pour servir `/Assets/` :
 
 ```js
 import { defineConfig } from "vite";
@@ -198,8 +226,8 @@ export default defineConfig({
 });
 ```
 
-Sans cette configuration, `buildModuleUrl("Assets/Textures/NaturalEarthII")`
-génère des URLs que Vite ne sait pas servir (404 sur les tuiles).
+Avec `OpenStreetMapImageryProvider` (URL externe), cette configuration n'est pas
+strictement nécessaire.
 
 ```js
 const views = await sensorSystem.getSensorsSeeing(target, {
